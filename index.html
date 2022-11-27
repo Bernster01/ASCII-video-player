@@ -85,7 +85,6 @@
             video.src = URL.createObjectURL(files[0]);
             video.volume = volumeControl.value;
             video.play();
-            saveVideo(files);
 
         });
         let playPause = document.getElementById('play-pause');
@@ -208,37 +207,14 @@
         let chars = [".","~","#","+","!","0","$","%","&","@"];
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
-        if(!invertedColor) chars = chars.reverse();
+        if(invertedColor) chars = chars.reverse();
         if (brightness <= 0) return chars[0];
         if (brightness >= 255) return chars[chars.length - 1];
 
         let index = Math.floor(brightness / 255 * chars.length);
         return chars[index];
     }
-    function saveVideo(files){
-        //Save the video to json file as base64
-        let reader = new FileReader();
-        reader.readAsDataURL(files[0]);
-        reader.onload = function () {
-            let video = reader.result;
-            let videoName = files[0].name;
-            let videoData = {
-                name: videoName,
-                video: video
-            }
-            let videoDataJson = JSON.stringify(videoData);
-            //open videos.json file
-            let fileToOpenName = "videos.json";
-            let fileToOpen = new File([videoDataJson], fileToOpenName, {
-                type: "application/json",
-            });
-
-            
-
-            
-
-        };
-    }
+    
     document.addEventListener("DOMContentLoaded", starterFunction);
 </script>
 
