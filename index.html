@@ -8,7 +8,7 @@
 </head>
 <style>
     body {
-        background: rgb(86, 86, 86);
+        background: rgb(0, 0, 0);
     }
 
     .container {
@@ -33,20 +33,26 @@
     }
 
     #textRender {
-        font-size: 8pt;
+        font-size: 6pt;
         font-family: 'Courier New', Courier, monospace;
         color:white;
-        align-self: start;
+        overflow: hidden;
+        border: 0.5em solid rgb(186, 186, 186);
+        border-radius: 1em;
+        background-color: rgb(46, 46, 46);
+    
     }
     .video-controller{
         position: fixed;
+        display: block;
         bottom: 0;
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: rgb(172, 172, 172);
         border-radius: 1em;
         padding: 2em;
-
+        opacity: 1;
+        transition: opacity 0.5s;
     }
 </style>
 
@@ -58,11 +64,11 @@
 
         <video id=v controls loop></video>
     </div>
-    <div class=video-controller>
-        <h2>ASCII videoplayer - ver 2.0</h2>
+    <div class=video-controller id=controller>
+        <h2>ASCII videoplayer - ver 2.1</h2>
         <button id=play-pause>Play/Pause</button>
         <input type=range id=volume min=0 max=1 value=0.1 step=0.01>
-        <input type=range id=size min=0.5 max=4 value=1 step=0.5>
+        <input type=range id=size min=0.5 max=4 value=2 step=0.5>
         <p>Input</p>
         <input type=file id=file accept="video/*">
         <input type=checkbox id=invertColor>
@@ -71,29 +77,40 @@
 </body>
 <script>
     let pixels = [];
-    let size = 1;
+    let size = 2;
     let isPlaying = false;
     let invertedColor = false;
     function starterFunction() {
         let file = document.getElementById('file');
         let volumeControl = document.getElementById('volume');
+        document.getElementById('controller').addEventListener('mouseover', function () {
+            this.style.opacity = 1;
+        });
+        document.getElementById('controller').addEventListener('mouseout', function () {
+           if(isPlaying) this.style.opacity = 0.25;
+        });
         file.addEventListener('change', function () {
+            
             let files = this.files;
             isPlaying = false;
             //Add the video to the video element
             let video = document.getElementById('v');
+            if(video.isPlaying){
+                video.stop()
+            }
             video.src = URL.createObjectURL(files[0]);
             video.volume = volumeControl.value;
             video.play();
-
         });
         let playPause = document.getElementById('play-pause');
         playPause.addEventListener('click', function () {
             let video = document.getElementById('v');
             if (video.paused) {
                 video.play();
+                document.getElementById('controller').style.opacity = 0.25;
             } else {
                 video.pause();
+                document.getElementById('controller').style.opacity = 1;
             }
         });
         volumeControl.addEventListener('mousemove', function () {
@@ -124,18 +141,22 @@
             }
             if(sizeValue == 0) sizeValue = 0.5;
             if(this.value==1) sizeValue = 1;
-            size = sizeValue 
+            size = sizeValue
+            setCorrectWidth()
         });
         v.addEventListener('play', function () {
             if (!isPlaying) {
                 cw = back.width = canvas.width = v.clientWidth;
                 ch = back.height = canvas.height = v.clientHeight;
                 isPlaying = true;
+                
             }
             document.getElementById('textRender').style.width = cw + 'px';
+            document.getElementById('controller').style.opacity = 0.25;
             // document.getElementById('textRender').style.height = ch + 'px';
-
+            
             draw(this, context, backcontext, cw, ch);
+            setCorrectWidth();
         }, false);
         document.getElementById('invertColor').addEventListener('change', function () {
             if (this.checked) invertedColor = true; else invertedColor = false;
@@ -204,7 +225,7 @@
     }
     function getChar(brightness) {
         //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
-        let chars = [".","~","#","+","!","0","$","%","&","@"];
+        let chars = [".","~","#","+","!","0","$","%","&","$"];
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
         if(invertedColor) chars = chars.reverse();
@@ -214,7 +235,11 @@
         let index = Math.floor(brightness / 255 * chars.length);
         return chars[index];
     }
-    
+    function setCorrectWidth(){
+        let pixelCount = pixels[0].length /(4/ size);
+        let width = pixelCount * 4.81;
+        document.getElementById('textRender').style.width = width + 'px';
+    }
     document.addEventListener("DOMContentLoaded", starterFunction);
 </script>
 
