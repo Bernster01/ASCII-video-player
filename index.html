@@ -65,6 +65,7 @@
         <input type=range id=size min=0.5 max=4 value=1 step=0.5>
         <p>Input</p>
         <input type=file id=file accept="video/*">
+        <input type=checkbox id=invertColor>
     </div>
 
 </body>
@@ -72,6 +73,7 @@
     let pixels = [];
     let size = 1;
     let isPlaying = false;
+    let invertedColor = false;
     function starterFunction() {
         let file = document.getElementById('file');
         let volumeControl = document.getElementById('volume');
@@ -134,6 +136,9 @@
 
             draw(this, context, backcontext, cw, ch);
         }, false);
+        document.getElementById('invertColor').addEventListener('change', function () {
+            if (this.checked) invertedColor = true; else invertedColor = false;
+        });
 
     }
     function draw(v, c, bc, w, h) {
@@ -199,6 +204,7 @@
     function getChar(brightness) {
         //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
         let chars = [".","~","#","+","!","0","$","%","&","@"];
+        if(invertedColor) chars = chars.reverse();
         if (brightness <= 0) return chars[0];
         if (brightness >= 255) return chars[chars.length - 1];
 
