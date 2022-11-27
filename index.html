@@ -155,7 +155,7 @@
             document.getElementById('controller').style.opacity = 0;
             // document.getElementById('textRender').style.height = ch + 'px';
             
-            draw(this, context, backcontext, cw, ch);
+            draw(this, backcontext, cw, ch);
             setCorrectWidth();
         }, false);
         document.getElementById('invertColor').addEventListener('change', function () {
@@ -163,7 +163,7 @@
         });
 
     }
-    function draw(v, c, bc, w, h) {
+    function draw(v, bc, w, h) {
         if (v.paused || v.ended) return false;
         bc.drawImage(v, 0, 0, w, h);
         let idata = bc.getImageData(0, 0, w, h);
@@ -187,10 +187,9 @@
 
         }
         idata.data = data;
-        c.putImageData(idata, 0, 0);
         drawInNumbers(w);
         setTimeout(() => {
-            draw(v, c, bc, w, h);
+            draw(v, bc, w, h);
         }, 0);
     }
     function drawInNumbers(width) {
