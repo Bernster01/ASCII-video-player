@@ -34,7 +34,7 @@
 
     #textRender {
         font-size: 8pt;
-        font-family: monospace;
+        font-family: 'Courier New', Courier, monospace;
         color:white;
         align-self: start;
     }
@@ -204,7 +204,9 @@
     function getChar(brightness) {
         //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
         let chars = [".","~","#","+","!","0","$","%","&","@"];
-        if(invertedColor) chars = chars.reverse();
+        //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
+        //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
+        if(!invertedColor) chars = chars.reverse();
         if (brightness <= 0) return chars[0];
         if (brightness >= 255) return chars[chars.length - 1];
 
