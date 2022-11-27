@@ -61,7 +61,7 @@
     <div class=video-controller>
         <h2>ASCII videoplayer - ver 2.0</h2>
         <button id=play-pause>Play/Pause</button>
-        <input type=range id=volume min=0 max=100 value=0.1 step=0.1>
+        <input type=range id=volume min=0 max=1 value=0.1 step=0.01>
         <input type=range id=size min=0.5 max=4 value=1 step=0.5>
         <p>Input</p>
         <input type=file id=file accept="video/*">
@@ -93,9 +93,9 @@
                 video.pause();
             }
         });
-        volumeControl.addEventListener('change', function () {
+        volumeControl.addEventListener('mousemove', function () {
             let video = document.getElementById('v');
-            video.volume = this.value / 100;
+            video.volume = this.value;
         });
         let v = document.getElementById('v');
         let canvas = document.getElementById('c');
