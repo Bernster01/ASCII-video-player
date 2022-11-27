@@ -25,7 +25,7 @@
         width: auto;
         height: auto;
         background: aliceblue;
-        /* display: none; */
+        display: none;
     }
 
     #v {
@@ -169,8 +169,8 @@
 
     }
     function getChar(brightness) {
-        //Map brightness to a char from brightest to darkest
-        let chars = [".","~","#","&","@","$","%","*","!",";"];
+        //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
+        let chars = [".","~","*","+","$","%","&","@","#"];
         if (brightness <= 0) return chars[0];
         if (brightness >= 255) return chars[chars.length - 1];
 
