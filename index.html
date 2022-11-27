@@ -34,7 +34,7 @@
 
     #textRender {
         font-size: 8pt;
-        font-family: 'Courier New', Courier, monospace;
+        font-family:monospace;;
         color:white;
         overflow: hidden;
         border: 0.5em solid rgb(186, 186, 186);
@@ -46,13 +46,14 @@
         position: fixed;
         display: block;
         bottom: 0;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        left: 0;
+        /* transform: translate(-50%, -50%); */
         background-color: rgb(172, 172, 172);
         border-radius: 1em;
         padding: 2em;
         opacity: 1;
         transition: opacity 0.5s;
+        
     }
 </style>
 
@@ -87,7 +88,7 @@
             this.style.opacity = 1;
         });
         document.getElementById('controller').addEventListener('mouseout', function () {
-           if(isPlaying) this.style.opacity = 0;
+           if(isPlaying) this.style.opacity = 0.25;
         });
         file.addEventListener('change', function () {
             
@@ -107,7 +108,7 @@
             let video = document.getElementById('v');
             if (video.paused) {
                 video.play();
-                document.getElementById('controller').style.opacity = 0;
+                document.getElementById('controller').style.opacity = 0.25;
             } else {
                 video.pause();
                 document.getElementById('controller').style.opacity = 1;
@@ -224,7 +225,7 @@
     }
     function getChar(brightness) {
         //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
-        let chars = [".","~","#","+","!","0","$","%","&","@"];
+        let chars = [".",",","~","#","+","!","0","$","%","&","@"];
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
         if(invertedColor) chars = chars.reverse();
@@ -236,7 +237,7 @@
     }
     function setCorrectWidth(){
         let pixelCount = pixels[0].length /(4/ size);
-        let width = pixelCount * 6.4;
+        let width = pixelCount * 5.87;
         document.getElementById('textRender').style.width = width + 'px';
     }
     document.addEventListener("DOMContentLoaded", starterFunction);
