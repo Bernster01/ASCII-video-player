@@ -145,6 +145,10 @@
             let video = document.getElementById('v');
             video.volume = this.value;
         });
+        volumeControl.addEventListener('change', function () {
+            let video = document.getElementById('v');
+            video.volume = this.value;
+        });
         let v = document.getElementById('v');
         let canvas = document.getElementById('c');
         let context = canvas.getContext('2d');
@@ -156,6 +160,23 @@
         let cw, ch;
         let sizeControl = document.getElementById('size');
         sizeControl.addEventListener('mousemove', function () {
+            let sizeValue = this.value;
+
+            if (sizeValue == 0.5) sizeValue = 0.5;
+            else if (sizeValue % 2 != 0) {
+                sizeValue = Math.floor(sizeValue - 0.5);
+                if (sizeValue == 1) sizeValue = 1;
+                else if (sizeValue % 2 == 0)
+                    sizeValue = sizeValue;
+                else
+                    sizeValue = Math.floor(sizeValue - 0.5);
+            }
+            if (sizeValue == 0) sizeValue = 0.5;
+            if (this.value == 1) sizeValue = 1;
+            size = sizeValue
+            setCorrectWidth()
+        });
+        sizeControl.addEventListener('change', function () {
             let sizeValue = this.value;
 
             if (sizeValue == 0.5) sizeValue = 0.5;
