@@ -15,6 +15,7 @@
     body::-webkit-scrollbar {
         display: none;
     }
+
     /* Hide scrollbar for IE, Edge and Firefox */
     .example {
         -ms-overflow-style: none;
@@ -22,10 +23,12 @@
         scrollbar-width: none;
         /* Firefox */
     }
-    .robin-mode{
-        color:#ff7600 !important;
-        background-color: rgba(87, 202, 255, 0.3)!important;
+
+    .robin-mode {
+        color: #ff7600 !important;
+        background-color: rgba(87, 202, 255, 0.3) !important;
     }
+
     .container {
         display: flex;
         flex-wrap: wrap;
@@ -102,6 +105,8 @@
     let isPlaying = false;
     let invertedColor = false;
     function starterFunction() {
+        //Enter fullscreen
+
         let file = document.getElementById('file');
         let volumeControl = document.getElementById('volume');
         document.getElementById('robinMode').addEventListener('change', function () {
@@ -118,7 +123,14 @@
             if (isPlaying) this.style.opacity = 0.25;
         });
         file.addEventListener('change', function () {
-
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
             let files = this.files;
             isPlaying = false;
             //Add the video to the video element
@@ -273,11 +285,11 @@
     }
     function getChar(brightness) {
         //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
-        let chars = ["&nbsp;",".", ",", "+", "#","&#x25A1;", "0", "$","@"];
+        let chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
         if (invertedColor) chars = chars.reverse();
-        if(brightness >230) brightness *= 0.9;
+        if (brightness > 230) brightness *= 0.9;
         if (brightness <= 0) return chars[0];
         if (brightness >= 255) return chars[chars.length - 1];
 
