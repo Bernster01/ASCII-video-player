@@ -22,7 +22,10 @@
         scrollbar-width: none;
         /* Firefox */
     }
-
+    .robin-mode{
+        color:#ff7600 !important;
+        background-color: rgba(87, 202, 255, 0.3)!important;
+    }
     .container {
         display: flex;
         flex-wrap: wrap;
@@ -52,7 +55,7 @@
         overflow: hidden;
         border: 0.5em solid rgb(186, 186, 186);
         border-radius: 1em;
-        background-color: rgb(57, 57, 57);
+        background-color: rgb(28, 28, 28);
 
     }
 
@@ -86,7 +89,10 @@
         <input type=range id=size min=0.5 max=4 value=2 step=0.5>
         <p>Input</p>
         <input type=file id=file accept="video/*">
+        <label for=invertColor>Invert Color</label>
         <input type=checkbox id=invertColor>
+        <label for=robinMode>Robin Mode</label>
+        <input type=checkbox id=robinMode>
     </div>
 
 </body>
@@ -98,6 +104,13 @@
     function starterFunction() {
         let file = document.getElementById('file');
         let volumeControl = document.getElementById('volume');
+        document.getElementById('robinMode').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('textRender').classList.add('robin-mode');
+            } else {
+                document.getElementById('textRender').classList.remove('robin-mode');
+            }
+        });
         document.getElementById('controller').addEventListener('mouseover', function () {
             this.style.opacity = 1;
         });
@@ -239,7 +252,7 @@
     }
     function getChar(brightness) {
         //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
-        let chars = [".", ",", "~", "#", "+", "!", "0", "$", "%", "&", "@"];
+        let chars = ["&nbsp;",".", ",", "#", "+", "!", "0", "$", "&", "@"];
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
         //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
         if (invertedColor) chars = chars.reverse();
