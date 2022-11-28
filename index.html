@@ -213,6 +213,7 @@
 
             }
             document.getElementById('textRender').style.width = cw + 'px';
+            document.getElementById('textRender').style.height = cw + 'px';
             document.getElementById('controller').style.opacity = 0;
             // document.getElementById('textRender').style.height = ch + 'px';
 
@@ -300,6 +301,7 @@
         let pixelCount = pixels[0].length / (4 / size);
         let width = pixelCount * 5.87;
         document.getElementById('textRender').style.width = width + 'px';
+        document.getElementById('textRender').style.height = width + 'px';
     }
     document.addEventListener("DOMContentLoaded", starterFunction);
 </script>
