@@ -250,8 +250,6 @@
     function getChar(brightness) {
         //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
         let chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
-        //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
-        //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
         if (invertedColor) chars = chars.reverse();
         if (brightness > 230) brightness *= 0.9;
         if (brightness <= 0) return chars[0];
@@ -272,7 +270,9 @@
         let video = document.getElementById('v');
         v.pause();
         isPlaying = false;
-        v.play();
+        setTimeout(() => {
+            video.play();
+        }, 75);
 
     }
     document.addEventListener("DOMContentLoaded", starterFunction);
