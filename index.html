@@ -51,7 +51,7 @@
     }
 
     #textRender {
-        font-size: 8pt;
+        font-size: 7px;
         font-family: monospace;
         ;
         color: white;
@@ -110,6 +110,7 @@
     };
     let w;
     let h;
+    let frameRate = 30;
     function starterFunction() {
         //Enter fullscreen
 
@@ -226,7 +227,7 @@
         drawInNumbers(w);
         setTimeout(() => {
             draw(v, bc);
-        }, 20);
+        }, 1000 / frameRate);
     }
     function drawInNumbers(width) {
         //Shrink the pixels array to 1/4 of its size 
@@ -260,9 +261,9 @@
     }
     function setCorrectWidth() {
         let pixelCount = pixels[0].length;
-        let width = pixelCount * 5.8;
+        let width = pixelCount * 3.86;
         document.getElementById('textRender').style.width = width + 'px';
-        document.getElementById('textRender').style.height = width*1.05 + 'px';
+        document.getElementById('textRender').style.height = width*1.12 + 'px';
     }
     function changeVideoSize(value,c){
         let sizes = ["4","2","1"];
