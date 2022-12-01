@@ -51,7 +51,7 @@
     }
 
     #textRender {
-        font-size: 8pt;
+        font-size: 7px;
         font-family: monospace;
         ;
         color: white;
@@ -90,6 +90,7 @@
         <button id=play-pause>Play/Pause</button>
         <input type=range id=volume min=0 max=0.2 value=0.1 step=0.01>
         <input type=range id=size min=1 max=3 value=2 step=1>
+        <input type=range id=frameRate min=1 max=60 value=30 step=1>
         <p>Input</p>
         <input type=file id=file accept="video/*">
         <label for=invertColor>Invert Color</label>
@@ -110,6 +111,7 @@
     };
     let w;
     let h;
+    let frameRate = 30;
     function starterFunction() {
         //Enter fullscreen
 
@@ -165,6 +167,14 @@
         volumeControl.addEventListener('change', function () {
             let video = document.getElementById('v');
             video.volume = this.value;
+        });
+        let frameRateControl = document.getElementById('frameRate');
+        frameRateControl.addEventListener('input', function () {
+            frameRate = this.value;
+        });
+        frameRateControl.addEventListener('dblclick', function () {
+            this.value = 30;
+            frameRate = 30;
         });
         let v = document.getElementById('v');
         let canvas = document.getElementById('c');
@@ -226,7 +236,7 @@
         drawInNumbers(w);
         setTimeout(() => {
             draw(v, bc);
-        }, 20);
+        }, 1000 / frameRate);
     }
     function drawInNumbers(width) {
         //Shrink the pixels array to 1/4 of its size 
@@ -260,9 +270,9 @@
     }
     function setCorrectWidth() {
         let pixelCount = pixels[0].length;
-        let width = pixelCount * 5.8;
+        let width = pixelCount * 3.86;
         document.getElementById('textRender').style.width = width + 'px';
-        document.getElementById('textRender').style.height = width*1.05 + 'px';
+        document.getElementById('textRender').style.height = width*1.12 + 'px';
     }
     function changeVideoSize(value,c){
         let sizes = ["4","2","1"];
