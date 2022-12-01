@@ -104,6 +104,10 @@
     let size = 2;
     let isPlaying = false;
     let invertedColor = false;
+    let sourceSize = {
+        width: 0,
+        height: 0
+    };
     function starterFunction() {
         //Enter fullscreen
 
@@ -124,17 +128,16 @@
         });
         file.addEventListener('change', function () {
             let elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
-                elem.msRequestFullscreen();
-            }
             let files = this.files;
             isPlaying = false;
             //Add the video to the video element
             let video = document.getElementById('v');
+            // Remove the width and height attributes
+            video.removeAttribute('width');
+            video.removeAttribute('height');
+        
+            
+            
             if (video.isPlaying) {
                 video.stop()
             }
@@ -172,40 +175,16 @@
         let cw, ch;
         let sizeControl = document.getElementById('size');
         sizeControl.addEventListener('mousemove', function () {
-            let sizeValue = this.value;
-
-            if (sizeValue == 0.5) sizeValue = 0.5;
-            else if (sizeValue % 2 != 0) {
-                sizeValue = Math.floor(sizeValue - 0.5);
-                if (sizeValue == 1) sizeValue = 1;
-                else if (sizeValue % 2 == 0)
-                    sizeValue = sizeValue;
-                else
-                    sizeValue = Math.floor(sizeValue - 0.5);
-            }
-            if (sizeValue == 0) sizeValue = 0.5;
-            if (this.value == 1) sizeValue = 1;
-            size = sizeValue
-            setCorrectWidth()
+            
         });
         sizeControl.addEventListener('change', function () {
-            let sizeValue = this.value;
-
-            if (sizeValue == 0.5) sizeValue = 0.5;
-            else if (sizeValue % 2 != 0) {
-                sizeValue = Math.floor(sizeValue - 0.5);
-                if (sizeValue == 1) sizeValue = 1;
-                else if (sizeValue % 2 == 0)
-                    sizeValue = sizeValue;
-                else
-                    sizeValue = Math.floor(sizeValue - 0.5);
-            }
-            if (sizeValue == 0) sizeValue = 0.5;
-            if (this.value == 1) sizeValue = 1;
-            size = sizeValue
-            setCorrectWidth()
+            
         });
         v.addEventListener('play', function () {
+            v.videoHeight = 150;
+            sourceSize.width = v.videoWidth;
+            sourceSize.height = v.videoHeight;
+            v.height = v.clientHeight/size;
             if (!isPlaying) {
                 cw = back.width = canvas.width = v.clientWidth;
                 ch = back.height = canvas.height = v.clientHeight;
@@ -248,7 +227,6 @@
 
 
         }
-        idata.data = data;
         drawInNumbers(w);
         setTimeout(() => {
             draw(v, bc, w, h);
@@ -259,14 +237,8 @@
 
         let textRender = document.getElementById('textRender');
         //Shrink the pixels matrix to 1/4 of its size
-        let newPixels = [];
-        let factor = 4 / size;
-        for (let i = 0; i < pixels.length; i += factor) {
-            newPixels[i / factor] = [];
-            for (let j = 0; j < pixels[i].length; j += factor) {
-                newPixels[i / factor][j / factor] = pixels[i][j];
-            }
-        }
+        let newPixels = pixels;
+        
 
 
         //Draw the pixels as plain text
@@ -299,9 +271,9 @@
     }
     function setCorrectWidth() {
         let pixelCount = pixels[0].length / (4 / size);
-        let width = pixelCount * 5.87;
+        let width = pixelCount * 11.75;
         document.getElementById('textRender').style.width = width + 'px';
-        document.getElementById('textRender').style.height = width + 'px';
+        document.getElementById('textRender').style.height = width*1.05 + 'px';
     }
     document.addEventListener("DOMContentLoaded", starterFunction);
 </script>
