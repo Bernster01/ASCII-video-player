@@ -88,8 +88,8 @@
     <div class=video-controller id=controller>
         <h2>ASCII Video Player - ver 3</h2>
         <button id=play-pause>Play/Pause</button>
-        <input type=range id=volume min=0 max=1 value=0.1 step=0.01>
-        <input type=range id=size min=0.5 max=4 value=2 step=0.5>
+        <input type=range id=volume min=0 max=0.2 value=0.1 step=0.01>
+        <input type=range id=size min=1 max=3 value=2 step=1>
         <p>Input</p>
         <input type=file id=file accept="video/*">
         <label for=invertColor>Invert Color</label>
@@ -100,210 +100,182 @@
 
 </body>
 <script>
-let pixels = [];
-let size = 2;
-let isPlaying = false;
-let invertedColor = false;
-function starterFunction() {
-    //Enter fullscreen
+    let pixels = [];
+    let size = 2;
+    let isPlaying = false;
+    let invertedColor = false;
+    let sourceSize = {
+        width: 300,
+        height: 150
+    };
+    let w;
+    let h;
+    function starterFunction() {
+        //Enter fullscreen
 
-    let file = document.getElementById('file');
-    let volumeControl = document.getElementById('volume');
-    document.getElementById('robinMode').addEventListener('change', function () {
-        if (this.checked) {
-            document.getElementById('textRender').classList.add('robin-mode');
-        } else {
-            document.getElementById('textRender').classList.remove('robin-mode');
-        }
-    });
-    document.getElementById('controller').addEventListener('mouseover', function () {
-        this.style.opacity = 1;
-    });
-    document.getElementById('controller').addEventListener('mouseout', function () {
-        if (isPlaying) this.style.opacity = 0.25;
-    });
-    file.addEventListener('change', function () {
-        let elem = document.documentElement;
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { /* Safari */
-            elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { /* IE11 */
-            elem.msRequestFullscreen();
-        }
-        let files = this.files;
-        isPlaying = false;
-        //Add the video to the video element
-        let video = document.getElementById('v');
-        if (video.isPlaying) {
-            video.stop()
-        }
-        video.src = URL.createObjectURL(files[0]);
-        video.volume = volumeControl.value;
-        video.play();
-    });
-    let playPause = document.getElementById('play-pause');
-    playPause.addEventListener('click', function () {
-        let video = document.getElementById('v');
-        if (video.paused) {
+        let file = document.getElementById('file');
+        let volumeControl = document.getElementById('volume');
+        document.getElementById('robinMode').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('textRender').classList.add('robin-mode');
+            } else {
+                document.getElementById('textRender').classList.remove('robin-mode');
+            }
+        });
+        document.getElementById('controller').addEventListener('mouseover', function () {
+            this.style.opacity = 1;
+        });
+        document.getElementById('controller').addEventListener('mouseout', function () {
+            if (isPlaying) this.style.opacity = 0.25;
+        });
+        file.addEventListener('change', function () {
+            let elem = document.documentElement;
+            let files = this.files;
+            isPlaying = false;
+            //Add the video to the video element
+            let video = document.getElementById('v');
+            // Remove the width and height attributes
+            video.removeAttribute('width');
+            video.removeAttribute('height');
+        
+            
+            
+            if (video.isPlaying) {
+                video.stop()
+            }
+            video.src = URL.createObjectURL(files[0]);
+            video.volume = volumeControl.value;
             video.play();
-            document.getElementById('controller').style.opacity = 0.25;
-        } else {
-            video.pause();
-            document.getElementById('controller').style.opacity = 1;
+        });
+        let playPause = document.getElementById('play-pause');
+        playPause.addEventListener('click', function () {
+            let video = document.getElementById('v');
+            if (video.paused) {
+                video.play();
+                document.getElementById('controller').style.opacity = 0.25;
+            } else {
+                video.pause();
+                document.getElementById('controller').style.opacity = 1;
+            }
+        });
+        volumeControl.addEventListener('mousemove', function () {
+            let video = document.getElementById('v');
+            video.volume = this.value;
+        });
+        volumeControl.addEventListener('change', function () {
+            let video = document.getElementById('v');
+            video.volume = this.value;
+        });
+        let v = document.getElementById('v');
+        let canvas = document.getElementById('c');
+        let context = canvas.getContext('2d');
+
+        let back = document.createElement('canvas');
+        let backcontext = back.getContext('2d', {
+            willReadFrequently: true
+        });
+        let cw, ch;
+        let sizeControl = document.getElementById('size');
+        sizeControl.addEventListener('change', function () {
+            changeVideoSize(this.value,back);
+        });
+        v.addEventListener('play', function () {
+            if (!isPlaying) {
+                cw = back.width = canvas.width = sourceSize.width/size;
+                ch = back.height = canvas.height = sourceSize.height/size;
+                isPlaying = true;
+                w = cw;
+                h = ch;
+            }
+            document.getElementById('textRender').style.width = cw + 'px';
+            document.getElementById('textRender').style.height = cw + 'px';
+            document.getElementById('controller').style.opacity = 0;
+            // document.getElementById('textRender').style.height = ch + 'px';
+            
+            draw(this, backcontext);
+            console.log(v.videoHeight,v.height,v.clientHeight);
+            setCorrectWidth();
+            console.log(v.videoHeight,v.height,v.clientHeight);
+        }, false);
+        document.getElementById('invertColor').addEventListener('change', function () {
+            if (this.checked) invertedColor = true; else invertedColor = false;
+        });
+
+    }
+    function draw(v, bc) {
+        if (v.paused || v.ended) return false;
+        bc.drawImage(v, 0, 0, w, h);
+        let idata = bc.getImageData(0, 0, w, h);
+        let data = idata.data;
+        pixels = [];
+        for (let i = 0; i < h; i++) {
+            pixels[i] = pixels[i] || [];
+            for (let j = 0; j < w; j++) {
+                let index = (i * w + j) * 4;
+                let r = data[index];
+                let g = data[index + 1];
+                let b = data[index + 2];
+                let a = data[index + 3];
+                let brightness = (3*r + 4*g + b) >>> 3;
+                
+                pixels[i][j] = brightness;
+            }
         }
-    });
-    volumeControl.addEventListener('mousemove', function () {
+
+
+        drawInNumbers(w);
+        setTimeout(() => {
+            draw(v, bc);
+        }, 20);
+    }
+    function drawInNumbers(width) {
+        //Shrink the pixels array to 1/4 of its size 
+
+        let textRender = document.getElementById('textRender');
+        //Draw the pixels as plain text
+        let text = "";
+        //Loop through the pixels matrix
+        for (let i = 0; i < pixels.length; i++) {
+            for (let j = 0; j < pixels[i].length; j++) {
+                //Get char from brightness
+                let char = getChar(pixels[i][j]);
+                text += char;
+            }
+            //Add a new line
+            text += "\n";
+        }
+        textRender.innerHTML = text;
+
+    }
+    function getChar(brightness) {
+        //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
+        let chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
+        //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
+        //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
+        if (invertedColor) chars = chars.reverse();
+        if (brightness > 230) brightness *= 0.9;
+        if (brightness <= 0) return chars[0];
+        if (brightness >= 255) return chars[chars.length - 1];
+
+        let index = Math.floor(brightness / 256 * chars.length);
+        return chars[index];
+    }
+    function setCorrectWidth() {
+        let pixelCount = pixels[0].length;
+        let width = pixelCount * 5.8;
+        document.getElementById('textRender').style.width = width + 'px';
+        document.getElementById('textRender').style.height = width*1.05 + 'px';
+    }
+    function changeVideoSize(value,c){
+        let sizes = ["4","2","1"];
+        size = sizes[value-1];
         let video = document.getElementById('v');
-        video.volume = this.value;
-    });
-    volumeControl.addEventListener('change', function () {
-        let video = document.getElementById('v');
-        video.volume = this.value;
-    });
-    let v = document.getElementById('v');
-    let canvas = document.getElementById('c');
-    let context = canvas.getContext('2d');
-
-    let back = document.createElement('canvas');
-    let backcontext = back.getContext('2d', {
-        willReadFrequently: true
-    });
-    let cw, ch;
-    let sizeControl = document.getElementById('size');
-    sizeControl.addEventListener('mousemove', function () {
-        let sizeValue = this.value;
-
-        if (sizeValue == 0.5) sizeValue = 0.5;
-        else if (sizeValue % 2 != 0) {
-            sizeValue = Math.floor(sizeValue - 0.5);
-            if (sizeValue == 1) sizeValue = 1;
-            else if (sizeValue % 2 == 0)
-                sizeValue = sizeValue;
-            else
-                sizeValue = Math.floor(sizeValue - 0.5);
-        }
-        if (sizeValue == 0) sizeValue = 0.5;
-        if (this.value == 1) sizeValue = 1;
-        size = sizeValue
-        setCorrectWidth()
-    });
-    sizeControl.addEventListener('change', function () {
-        let sizeValue = this.value;
-
-        if (sizeValue == 0.5) sizeValue = 0.5;
-        else if (sizeValue % 2 != 0) {
-            sizeValue = Math.floor(sizeValue - 0.5);
-            if (sizeValue == 1) sizeValue = 1;
-            else if (sizeValue % 2 == 0)
-                sizeValue = sizeValue;
-            else
-                sizeValue = Math.floor(sizeValue - 0.5);
-        }
-        if (sizeValue == 0) sizeValue = 0.5;
-        if (this.value == 1) sizeValue = 1;
-        size = sizeValue
-        setCorrectWidth()
-    });
-    v.addEventListener('play', function () {
-        if (!isPlaying) {
-            cw = back.width = canvas.width = v.clientWidth;
-            ch = back.height = canvas.height = v.clientHeight;
-            isPlaying = true;
-
-        }
-        document.getElementById('textRender').style.width = cw + 'px';
-        document.getElementById('textRender').style.height = cw + 'px';
-        document.getElementById('controller').style.opacity = 0;
-        // document.getElementById('textRender').style.height = ch + 'px';
-
-        draw(this, backcontext, cw, ch);
-        setCorrectWidth();
-    }, false);
-    document.getElementById('invertColor').addEventListener('change', function () {
-        if (this.checked) invertedColor = true; else invertedColor = false;
-    });
-
-}
-function draw(v, bc, w, h) {
-    if (v.paused || v.ended) return false;
-    bc.drawImage(v, 0, 0, w, h);
-    let idata = bc.getImageData(0, 0, w, h);
-    let data = idata.data;
-    for (let i = 0; i < data.length; i += 4) {
-        let r = data[i];
-        let g = data[i + 1];
-        let b = data[i + 2];
-        let brightness = (3 * r + 4 * g + b) >>> 3;
-        data[i] = brightness;
-        data[i + 1] = brightness;
-        data[i + 2] = brightness;
-        //Map current brightness to a matrix
-        let x = Math.floor(i / 4 % w);
-        let y = Math.floor(i / 4 / w);
-        pixels[x] = pixels[x] || [];
-        pixels[y][x] = brightness;
-
-
-
+        v.pause();
+        isPlaying = false;
+        v.play();
 
     }
-    idata.data = data;
-    drawInNumbers(w);
-    setTimeout(() => {
-        draw(v, bc, w, h);
-    }, 0);
-}
-function drawInNumbers(width) {
-    //Shrink the pixels array to 1/4 of its size 
-
-    let textRender = document.getElementById('textRender');
-    //Shrink the pixels matrix to 1/4 of its size
-    let newPixels = [];
-    let factor = 4 / size;
-    for (let i = 0; i < pixels.length; i += factor) {
-        newPixels[i / factor] = [];
-        for (let j = 0; j < pixels[i].length; j += factor) {
-            newPixels[i / factor][j / factor] = pixels[i][j];
-        }
-    }
-
-
-    //Draw the pixels as plain text
-    let text = "";
-    //Loop through the pixels matrix
-    for (let i = 0; i < newPixels.length; i++) {
-        for (let j = 0; j < newPixels[i].length; j++) {
-            //Get char from brightness
-            let char = getChar(newPixels[i][j]);
-            text += char;
-        }
-        //Add a new line
-        text += "\n";
-    }
-    textRender.innerHTML = text;
-
-}
-function getChar(brightness) {
-    //Map brightness to a char from brightest to darkest let chars = [".","~","#","&","@","$","%","*","!",";"];
-    let chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
-    //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'.".split("");
-    //let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft1_+~!I;:,^.".split("");
-    if (invertedColor) chars = chars.reverse();
-    if (brightness > 230) brightness *= 0.9;
-    if (brightness <= 0) return chars[0];
-    if (brightness >= 255) return chars[chars.length - 1];
-
-    let index = Math.floor(brightness / 256 * chars.length);
-    return chars[index];
-}
-function setCorrectWidth() {
-    let pixelCount = pixels[0].length / (4 / size);
-    let width = pixelCount * 5.87;
-    document.getElementById('textRender').style.width = width + 'px';
-    document.getElementById('textRender').style.height = width + 'px';
-}
-document.addEventListener("DOMContentLoaded", starterFunction);
+    document.addEventListener("DOMContentLoaded", starterFunction);
 </script>
 
 
