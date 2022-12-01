@@ -89,7 +89,7 @@
         <h2>ASCII Video Player - ver 3</h2>
         <button id=play-pause>Play/Pause</button>
         <input type=range id=volume min=0 max=1 value=0.1 step=0.01>
-        <input type=range id=size min=0.5 max=4 value=2 step=0.5>
+        <input type=range id=size min=1 max=3 value=2 step=1>
         <p>Input</p>
         <input type=file id=file accept="video/*">
         <label for=invertColor>Invert Color</label>
@@ -105,9 +105,11 @@
     let isPlaying = false;
     let invertedColor = false;
     let sourceSize = {
-        width: 0,
-        height: 0
+        width: 300,
+        height: 150
     };
+    let w;
+    let h;
     function starterFunction() {
         //Enter fullscreen
 
@@ -174,80 +176,75 @@
         });
         let cw, ch;
         let sizeControl = document.getElementById('size');
-        sizeControl.addEventListener('mousemove', function () {
-            
-        });
         sizeControl.addEventListener('change', function () {
-            
+            changeVideoSize(this.value,back);
         });
         v.addEventListener('play', function () {
-            v.videoHeight = 150;
-            sourceSize.width = v.videoWidth;
-            sourceSize.height = v.videoHeight;
-            v.height = v.clientHeight/size;
             if (!isPlaying) {
-                cw = back.width = canvas.width = v.clientWidth;
-                ch = back.height = canvas.height = v.clientHeight;
+                cw = back.width = canvas.width = sourceSize.width/size;
+                ch = back.height = canvas.height = sourceSize.height/size;
                 isPlaying = true;
-
+                w = cw;
+                h = ch;
             }
             document.getElementById('textRender').style.width = cw + 'px';
             document.getElementById('textRender').style.height = cw + 'px';
             document.getElementById('controller').style.opacity = 0;
             // document.getElementById('textRender').style.height = ch + 'px';
-
-            draw(this, backcontext, cw, ch);
+            
+            draw(this, backcontext);
+            console.log(v.videoHeight,v.height,v.clientHeight);
             setCorrectWidth();
+            console.log(v.videoHeight,v.height,v.clientHeight);
         }, false);
         document.getElementById('invertColor').addEventListener('change', function () {
             if (this.checked) invertedColor = true; else invertedColor = false;
         });
 
     }
-    function draw(v, bc, w, h) {
+    function draw(v, bc) {
         if (v.paused || v.ended) return false;
         bc.drawImage(v, 0, 0, w, h);
         let idata = bc.getImageData(0, 0, w, h);
         let data = idata.data;
-        for (let i = 0; i < data.length; i += 4) {
-            let r = data[i];
-            let g = data[i + 1];
-            let b = data[i + 2];
-            let brightness = (3 * r + 4 * g + b) >>> 3;
-            data[i] = brightness;
-            data[i + 1] = brightness;
-            data[i + 2] = brightness;
-            //Map current brightness to a matrix
-            let x = Math.floor(i / 4 % w);
-            let y = Math.floor(i / 4 / w);
-            pixels[x] = pixels[x] || [];
-            pixels[y][x] = brightness;
-
-
-
-
+        for (let i = 0; i < h; i++) {
+            pixels[i] = pixels[i] || [];
+            for (let j = 0; j < w; j++) {
+                let index = (i * w + j) * 4;
+                let r = data[index];
+                let g = data[index + 1];
+                let b = data[index + 2];
+                let a = data[index + 3];
+                let brightness = (3*r + 4*g + b) >>> 3;
+                
+                pixels[i][j] = brightness;
+            }
         }
+        // Remove indexes that are not needed from matrix
+        pixels.splice(h, pixels.length - h);
+        for (let i = 0; i < h; i++) {
+
+            pixels[i].splice(w);
+            
+        }
+
+
         drawInNumbers(w);
         setTimeout(() => {
-            draw(v, bc, w, h);
+            draw(v, bc);
         }, 0);
     }
     function drawInNumbers(width) {
         //Shrink the pixels array to 1/4 of its size 
 
         let textRender = document.getElementById('textRender');
-        //Shrink the pixels matrix to 1/4 of its size
-        let newPixels = pixels;
-        
-
-
         //Draw the pixels as plain text
         let text = "";
         //Loop through the pixels matrix
-        for (let i = 0; i < newPixels.length; i++) {
-            for (let j = 0; j < newPixels[i].length; j++) {
+        for (let i = 0; i < pixels.length; i++) {
+            for (let j = 0; j < pixels[i].length; j++) {
                 //Get char from brightness
-                let char = getChar(newPixels[i][j]);
+                let char = getChar(pixels[i][j]);
                 text += char;
             }
             //Add a new line
@@ -270,10 +267,19 @@
         return chars[index];
     }
     function setCorrectWidth() {
-        let pixelCount = pixels[0].length / (4 / size);
-        let width = pixelCount * 11.75;
+        let pixelCount = pixels[0].length;
+        let width = pixelCount * 5.8;
         document.getElementById('textRender').style.width = width + 'px';
         document.getElementById('textRender').style.height = width*1.05 + 'px';
+    }
+    function changeVideoSize(value,c){
+        let sizes = ["4","2","1"];
+        size = sizes[value-1];
+        let video = document.getElementById('v');
+        v.pause();
+        isPlaying = false;
+        v.play();
+
     }
     document.addEventListener("DOMContentLoaded", starterFunction);
 </script>
