@@ -8,6 +8,7 @@ Upload a video file and watch it in ASCII art
 - Edge not tested
 - Safari is only tested on iOS and it works but it's slow
 - Opera not tested
+
 ##How to use
 - Upload a video file
 - Video should auto start (if not click the play button)
