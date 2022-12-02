@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
 body {
     background: rgb(0, 0, 0);
 }
@@ -43,8 +44,7 @@ body::-webkit-scrollbar {
 
 #textRender {
     font-size: 7px;
-    font-family: monospace;
-    ;
+    font-family: 'Roboto Mono', monospace;
     color: white;
     overflow: hidden;
     border: 0.5em solid rgb(186, 186, 186);
@@ -102,5 +102,4 @@ body::-webkit-scrollbar {
     padding: 1em;
     border-radius: 0.5em;
     color: white;
-    visibility: hidden;
 }

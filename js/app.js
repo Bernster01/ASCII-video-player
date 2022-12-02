@@ -12,6 +12,7 @@ function starterFunction() {
     //Initialize the app
     addEventListeners();
     displayVideoTime();
+    document.getElementById('seekDisplay').style.visibility = 'hidden';
 }
 function addEventListeners() {
     // Get elements
