@@ -68,3 +68,9 @@ body::-webkit-scrollbar {
 #time{
     color: white;
 }
+#play-pause{
+    display: inline;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+}

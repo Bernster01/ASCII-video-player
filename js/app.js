@@ -42,13 +42,15 @@ function addEventListeners() {
 
     volumeControl.addEventListener('input', function(){document.getElementById('v').volume = this.value});
 
-    playPause.addEventListener('click', () => {
+    playPause.addEventListener('click', function(){
         const video = document.getElementById('v');
         if (video.paused) {
             video.play();
+            this.innerHTML = "<i class='fa fa-pause'></i>";
             document.getElementById('controller').style.opacity = 0.25;
         } else {
             video.pause();
+            this.innerHTML = "<i class='fa fa-play'></i>";
             document.getElementById('controller').style.opacity = 1;
         }
     });
@@ -65,6 +67,7 @@ function addEventListeners() {
         const backcontext = back.getContext('2d', {
             willReadFrequently: true
         });
+        playPause.innerHTML = "<i class='fa fa-pause'></i>";
         if (!settings.isPlaying) {
             settings.w = back.width = 300 / settings.size;
             settings.h = back.height = 150 / settings.size;
