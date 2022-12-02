@@ -21,6 +21,7 @@ function addEventListeners() {
     const frameRateControl = document.getElementById('frameRate');
     const sizeControl = document.getElementById('size');
     const v = document.getElementById('v');
+    const timeSeek = document.getElementById('videoSeek');
 
     // Add event listeners
     file.addEventListener('change', function () {
@@ -93,6 +94,7 @@ function addEventListeners() {
     document.getElementById('invertColor').addEventListener('change', function () {
         if (this.checked) settings.invertedColor = true; else settings.invertedColor = false;
     });
+    timeSeek.addEventListener('input', seekInVideo);
 }
 function draw(v, bc) {
     if (v.paused || v.ended) return false;
@@ -170,15 +172,23 @@ function changeVideoSize(value) {
 function displayVideoTime(){
     const video = document.getElementById('v');
     const time = document.getElementById('time');
-    time.innerHTML = getVideoTime(video.currentTime);
-    console.log("time");
+    const timeLine = document.getElementById('videoSeek');
+    //Timeline in milliseconds
+    timeLine.max = video.duration * 1000;
+    timeLine.value = video.currentTime * 1000;
+    time.innerHTML = getVideoTime(video.currentTime)+' / '+ ((video.duration)?getVideoTime(video.duration):'--:--');
     setTimeout(() => {
         displayVideoTime();
-    }, 1000);
+    }, 100);
 }
 function getVideoTime(time) {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time - minutes * 60);
     return ((minutes <10) ? "0" + minutes : minutes) + ":" + ((seconds < 10) ? "0" + seconds : seconds);
+}
+function seekInVideo(){
+    const video = document.getElementById('v');
+    const timeLine = document.getElementById('videoSeek');
+    video.currentTime = timeLine.value / 1000;
 }
 document.addEventListener("DOMContentLoaded", starterFunction);
