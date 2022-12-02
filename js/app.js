@@ -11,6 +11,7 @@ let settings = {
 function starterFunction() {
     //Initialize the app
     addEventListeners();
+    displayVideoTime();
 }
 function addEventListeners() {
     // Get elements
@@ -74,7 +75,6 @@ function addEventListeners() {
         document.getElementById('controller').style.opacity = 0.25;
 
         draw(this, backcontext);
-
         setCorrectWidth();
     }, false);
     document.getElementById('robinMode').addEventListener('change', function () {
@@ -166,5 +166,19 @@ function changeVideoSize(value) {
         video.play();
     }, 75);
 
+}
+function displayVideoTime(){
+    const video = document.getElementById('v');
+    const time = document.getElementById('time');
+    time.innerHTML = getVideoTime(video.currentTime);
+    console.log("time");
+    setTimeout(() => {
+        displayVideoTime();
+    }, 1000);
+}
+function getVideoTime(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time - minutes * 60);
+    return ((minutes <10) ? "0" + minutes : minutes) + ":" + ((seconds < 10) ? "0" + seconds : seconds);
 }
 document.addEventListener("DOMContentLoaded", starterFunction);
