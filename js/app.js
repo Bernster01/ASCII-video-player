@@ -158,8 +158,11 @@ function setCorrectWidth() {
     const heightFactor = 1.12;
     const width = pixels[0].length * pixelFactor;
     const textRender = document.getElementById('textRender');
+    const videoControlls = document.getElementById('video-seek-container');
+
     textRender.style.width = width + 'px';
     textRender.style.height = width * heightFactor + 'px';
+    videoControlls.style.width = width + 'px';
 }
 function changeVideoSize(value) {
     const sizes = ["4", "2", "1"];
