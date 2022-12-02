@@ -137,7 +137,7 @@ function drawInNumbers() {
 }
 function getChar(brightness) {
     //Map brightness to a char
-    const chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
+    let chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
     if (settings.invertedColor) chars = chars.reverse();
     //Check if the brightness is min or max
     if (brightness <= 0) return chars[0];
