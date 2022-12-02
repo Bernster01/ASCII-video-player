@@ -1,5 +1,5 @@
 # ASCII-video-player
-Something a made firstly to render the music video bad apple in ascii, then it evolved to this
+Something a made firstly to render the music video bad apple in ascii, then it evolved into this.
 
 Upload a video file and watch it in ASCII art
 ##Browser support
