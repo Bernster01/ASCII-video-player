@@ -98,6 +98,26 @@ function addEventListeners() {
         if (this.checked) settings.invertedColor = true; else settings.invertedColor = false;
     });
     timeSeek.addEventListener('input', seekInVideo);
+    timeSeek.addEventListener('mousemove', function () {
+        const seekDisplay = document.getElementById('seekDisplay');
+        if(seekDisplay.style.visibility === 'hidden') seekDisplay.style.visibility = 'visible';
+        
+        //Set to to mouse position
+        const mousePosX = window.event.clientX;
+        const x = mousePosX - (seekDisplay.getBoundingClientRect().width/2);
+        seekDisplay.style.top = this.getBoundingClientRect().y-seekDisplay.getBoundingClientRect().height + 'px';
+        seekDisplay.style.left = x + 'px';
+        //Set content to current time in video
+
+        //Get mouse percentage of the seek bar
+        const mousePercentage = Math.round((mousePosX - this.getBoundingClientRect().x) / this.getBoundingClientRect().width * 1000)/1000;
+        const video = document.getElementById('v');
+        const time = video.duration * mousePercentage;
+        seekDisplay.innerHTML = getVideoTime(time);
+
+
+    });
+    timeSeek.addEventListener('mouseout', () => document.getElementById('seekDisplay').style.visibility = 'hidden');
 }
 function draw(v, bc) {
     if (v.paused || v.ended) return false;
