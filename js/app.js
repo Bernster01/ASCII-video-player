@@ -11,6 +11,7 @@ let settings = {
 function starterFunction() {
     //Initialize the app
     addEventListeners();
+    displayVideoTime();
 }
 function addEventListeners() {
     // Get elements
@@ -20,6 +21,7 @@ function addEventListeners() {
     const frameRateControl = document.getElementById('frameRate');
     const sizeControl = document.getElementById('size');
     const v = document.getElementById('v');
+    const timeSeek = document.getElementById('videoSeek');
 
     // Add event listeners
     file.addEventListener('change', function () {
@@ -40,13 +42,15 @@ function addEventListeners() {
 
     volumeControl.addEventListener('input', function(){document.getElementById('v').volume = this.value});
 
-    playPause.addEventListener('click', () => {
+    playPause.addEventListener('click', function(){
         const video = document.getElementById('v');
         if (video.paused) {
             video.play();
+            this.innerHTML = "<i class='fa fa-pause'></i>";
             document.getElementById('controller').style.opacity = 0.25;
         } else {
             video.pause();
+            this.innerHTML = "<i class='fa fa-play'></i>";
             document.getElementById('controller').style.opacity = 1;
         }
     });
@@ -63,6 +67,7 @@ function addEventListeners() {
         const backcontext = back.getContext('2d', {
             willReadFrequently: true
         });
+        playPause.innerHTML = "<i class='fa fa-pause'></i>";
         if (!settings.isPlaying) {
             settings.w = back.width = 300 / settings.size;
             settings.h = back.height = 150 / settings.size;
@@ -74,7 +79,6 @@ function addEventListeners() {
         document.getElementById('controller').style.opacity = 0.25;
 
         draw(this, backcontext);
-
         setCorrectWidth();
     }, false);
     document.getElementById('robinMode').addEventListener('change', function () {
@@ -93,6 +97,27 @@ function addEventListeners() {
     document.getElementById('invertColor').addEventListener('change', function () {
         if (this.checked) settings.invertedColor = true; else settings.invertedColor = false;
     });
+    timeSeek.addEventListener('input', seekInVideo);
+    timeSeek.addEventListener('mousemove', function () {
+        const seekDisplay = document.getElementById('seekDisplay');
+        if(seekDisplay.style.visibility === 'hidden') seekDisplay.style.visibility = 'visible';
+        
+        //Set to to mouse position
+        const mousePosX = window.event.clientX;
+        const x = mousePosX - (seekDisplay.getBoundingClientRect().width/2);
+        seekDisplay.style.top = this.getBoundingClientRect().y-seekDisplay.getBoundingClientRect().height + 'px';
+        seekDisplay.style.left = x + 'px';
+        //Set content to current time in video
+
+        //Get mouse percentage of the seek bar
+        const mousePercentage = Math.round((mousePosX - this.getBoundingClientRect().x) / this.getBoundingClientRect().width * 1000)/1000;
+        const video = document.getElementById('v');
+        const time = video.duration * mousePercentage;
+        seekDisplay.innerHTML = getVideoTime(time);
+
+
+    });
+    timeSeek.addEventListener('mouseout', () => document.getElementById('seekDisplay').style.visibility = 'hidden');
 }
 function draw(v, bc) {
     if (v.paused || v.ended) return false;
@@ -153,8 +178,11 @@ function setCorrectWidth() {
     const heightFactor = 1.12;
     const width = pixels[0].length * pixelFactor;
     const textRender = document.getElementById('textRender');
+    const videoControlls = document.getElementById('video-seek-container');
+
     textRender.style.width = width + 'px';
     textRender.style.height = width * heightFactor + 'px';
+    videoControlls.style.width = width + 'px';
 }
 function changeVideoSize(value) {
     const sizes = ["4", "2", "1"];
@@ -166,5 +194,27 @@ function changeVideoSize(value) {
         video.play();
     }, 75);
 
+}
+function displayVideoTime(){
+    const video = document.getElementById('v');
+    const time = document.getElementById('time');
+    const timeLine = document.getElementById('videoSeek');
+    //Timeline in milliseconds
+    timeLine.max = video.duration * 1000;
+    timeLine.value = video.currentTime * 1000;
+    time.innerHTML = getVideoTime(video.currentTime)+' / '+ ((video.duration)?getVideoTime(video.duration):'--:--');
+    setTimeout(() => {
+        displayVideoTime();
+    }, 100);
+}
+function getVideoTime(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time - minutes * 60);
+    return ((minutes <10) ? "0" + minutes : minutes) + ":" + ((seconds < 10) ? "0" + seconds : seconds);
+}
+function seekInVideo(){
+    const video = document.getElementById('v');
+    const timeLine = document.getElementById('videoSeek');
+    video.currentTime = timeLine.value / 1000;
 }
 document.addEventListener("DOMContentLoaded", starterFunction);
