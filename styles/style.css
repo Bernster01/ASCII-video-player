@@ -50,7 +50,8 @@ body::-webkit-scrollbar {
     border: 0.5em solid rgb(186, 186, 186);
     border-radius: 1em;
     background-color: rgb(28, 28, 28);
-
+    width: 300px;
+    height: 300px;
 }
 
 .video-controller {
@@ -102,4 +103,15 @@ body::-webkit-scrollbar {
     padding: 1em;
     border-radius: 0.5em;
     color: white;
+}
+#fileDrop{
+    display: flex;
+    width: fit-content;
+}
+#fileDrop form{
+    display: flex;
+    width: fit-content;
+}
+#hiddenInput{
+    display: none;
 }

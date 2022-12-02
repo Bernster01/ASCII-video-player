@@ -23,23 +23,23 @@ function addEventListeners() {
     const sizeControl = document.getElementById('size');
     const v = document.getElementById('v');
     const timeSeek = document.getElementById('videoSeek');
-
+    const fileDropVideo = document.getElementById('fileDrop');
     // Add event listeners
-    file.addEventListener('change', function () {
-        const files = this.files;
-        settings.isPlaying = false;
-        //Add the video to the video element
-        const video = document.getElementById('v');
-        // Remove the width and height attributes
-        video.removeAttribute('width');
-        video.removeAttribute('height');
-
-        if (video.isPlaying) video.stop()
-
-        video.src = URL.createObjectURL(files[0]);
-        video.volume = volumeControl.value;
-        video.play();
+    //Drag and drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileDropVideo.addEventListener(eventName, (e) =>{
+            e.preventDefault();
+            e.stopPropagation();
+        }, false)
+      })
+    fileDropVideo.addEventListener('dragover', (e) => {});
+    fileDropVideo.addEventListener('drop', (e) => {
+        changeVideo(e.dataTransfer.files);
     });
+    file.addEventListener('change', function () {
+        changeVideo(this.files);
+    });
+
 
     volumeControl.addEventListener('input', function(){document.getElementById('v').volume = this.value});
 
@@ -78,6 +78,7 @@ function addEventListeners() {
         elem.style.width = settings.w + 'px';
         elem.style.height = settings.w + 'px';
         document.getElementById('controller').style.opacity = 0.25;
+        
 
         draw(this, backcontext);
         setCorrectWidth();
@@ -122,7 +123,20 @@ function addEventListeners() {
 }
 function draw(v, bc) {
     if (v.paused || v.ended) return false;
-    bc.drawImage(v, 0, 0, settings.w, settings.h);
+    // First, draw it into the backing canvas
+    //Crop video source to fit the canvas
+    let xCrop = 0;
+    let yCrop = 0;
+    let wCrop = v.videoWidth;
+    let hCrop = v.videoHeight;
+    if (v.videoWidth > v.videoHeight) {
+        xCrop = (v.videoWidth - v.videoHeight) / 2;
+        wCrop = v.videoHeight;
+    } else if (v.videoHeight > v.videoWidth) {
+        yCrop = (v.videoHeight - v.videoWidth) / 2;
+        hCrop = v.videoWidth;
+    }
+    bc.drawImage(v, xCrop, yCrop, wCrop, hCrop, 0, 0, settings.w, settings.h);
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
     pixels = [];
@@ -217,5 +231,24 @@ function seekInVideo(){
     const video = document.getElementById('v');
     const timeLine = document.getElementById('videoSeek');
     video.currentTime = timeLine.value / 1000;
+}
+function changeVideo(input){
+        //Check if the file is a video
+        if(input[0].type.indexOf('video') === -1){
+            alert('Please select a video');
+            return;
+        }
+        settings.isPlaying = false;
+        //Add the video to the video element
+        const video = document.getElementById('v');
+        // Remove the width and height attributes
+        video.removeAttribute('width');
+        video.removeAttribute('height');
+
+        if (video.isPlaying) video.stop()
+
+        video.src = URL.createObjectURL(input[0]);
+        video.volume = document.getElementById('volume').value;
+        video.play();
 }
 document.addEventListener("DOMContentLoaded", starterFunction);

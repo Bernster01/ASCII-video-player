@@ -7,12 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="icon" href="/files/boi.png" type="image/png">
 
 </head>
 
 <body>
     <div class=container>
-        <span id=textRender></span>
+        <div id="fileDrop">
+           
+            <form>
+                <input type="file" id="hiddenInput" accept="video/*" />
+                <span id=textRender></span>
+            </form>
+        </div>
         <div id=video-seek-container>
             <div id=play-pause><i class="fa fa-play"></i></div>
             <input type=range id=videoSeek min=0 max=100 value=0>
@@ -22,15 +29,38 @@
     </div>
     <div class=video-controller id=controller>
         <h2>ASCII Video Player - ver 3.1.1</h2>
-        <input type=range id=volume min=0 max=0.2 value=0.1 step=0.01>
-        <input type=range id=size min=1 max=3 value=2 step=1>
-        <input type=range id=frameRate min=1 max=60 value=30 step=1>
-        <p>Input</p>
-        <input type=file id=file accept="video/*">
-        <label for=invertColor>Invert Color</label>
-        <input type=checkbox id=invertColor>
-        <label for=robinMode>Robin Mode</label>
-        <input type=checkbox id=robinMode>
+        <div>
+            <h3>Basic settings</h3>
+            <input type=range id=volume min=0 max=0.4 value=0.1 step=0.01>
+            <input type=range id=size min=1 max=3 value=2 step=1>
+            <input type=range id=frameRate min=1 max=60 value=30 step=1>
+            <p>Input - select or drop on video display</p>
+            <input type=file id=file accept="video/*">
+            <label for=invertColor>Invert Color</label>
+            <input type=checkbox id=invertColor>
+            <label for=robinMode>Robin Mode</label>
+            <input type=checkbox id=robinMode>
+        </div>
+        <h3>Advanced settings</h3>
+        <div id="Advanced_Settings_Container">
+            <i class="fa fa-chevron-down"></i>
+            <div id="Advanced_Settings">
+                <div class="Advanced-settings">
+                    <h4>Brightness Controll</h4>
+                    <div>
+                        <h5>Brightness threshold</h5>
+                        <label for=brightnessThreshold>Value</label>
+                        <input type=range id=brightnessThreshold min=0 max=255 value=230 step=1>
+                    </div>
+                    <div>
+                        <h5>Brightness reduction</h5>
+                        <label for=brightnessReduction>Value</label>
+                        <input type=range id=brightnessReduction min=0 max=1 value=0.9 step=0.01>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </div>
     <span id="seekDisplay"></span>
 </body>
