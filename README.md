@@ -15,3 +15,6 @@ Upload a video file and watch it in ASCII art
 - You can change the video resolution by changing the size slider
 - You can change the volume by changing the volume slider
 - You can change the frame rate by changing the frame rate slider
+
+## Site link
+https://bernster01.github.io/ASCII-video-player/
