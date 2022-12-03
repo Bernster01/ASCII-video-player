@@ -17,6 +17,9 @@ function starterFunction() {
     document.getElementById('adv_settings_switch').classList.add('rotated90');
     document.getElementById('Advanced_Settings').style.height = document.getElementById('Advanced_Settings').offsetHeight + 'px';
     advSettings();
+    document.querySelectorAll('input[type="range"]').forEach((input) => { 
+        input.addEventListener('mousedown',  () => window.getSelection().removeAllRanges());
+    });
 }
 function addEventListeners() {
     // Get elements
