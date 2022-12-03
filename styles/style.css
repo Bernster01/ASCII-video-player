@@ -50,20 +50,35 @@ body::-webkit-scrollbar {
     border: 0.5em solid rgb(186, 186, 186);
     border-radius: 1em;
     background-color: rgb(28, 28, 28);
-
+    width: 300px;
+    height: 300px;
 }
 
 .video-controller {
-    position: fixed;
-    display: block;
-    bottom: 0;
-    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: rgb(172, 172, 172);
     border-radius: 1em;
     padding: 2em;
     opacity: 1;
     transition: opacity 0.5s;
+    box-shadow: 4px -2px 16px -2px rgba(0, 0, 0, 0.8);
+    z-index: 2;
 
+}
+.video-controller-container {
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: flex-start;
+    width: fit-content;
+    height: auto;
+    transition: transform 1s ease-in-out;
 }
 #video-seek-container{
     display: flex;
@@ -102,4 +117,105 @@ body::-webkit-scrollbar {
     padding: 1em;
     border-radius: 0.5em;
     color: white;
+}
+#fileDrop{
+    display: flex;
+    width: fit-content;
+}
+#fileDrop form{
+    display: flex;
+    width: fit-content;
+}
+#hiddenInput{
+    display: none;
+}
+/* Advanced Settings */
+#Advanced_Settings_Container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+#adv_settings_switch{
+    background-color: rgb(148, 148, 148);
+    border-radius: 50%;
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+    padding: 0.5em;
+    text-align: center;
+    transition: background-color 0.5s, transform 0.5s;
+}
+    #adv_settings_switch:hover{
+    background-color: rgb(255, 68, 68);
+    cursor: pointer;
+    }
+    #adv_settings_switch:active{
+    transition: background-color 0.1s, transform 0.5s;
+    background-color: rgb(116, 25, 25);
+    }
+#Advanced_Settings{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: fit-content;
+    overflow: hidden;
+    background-color: rgb(140, 140, 140);
+    padding: 1em;
+    border-radius: 1em;
+    box-shadow: 0px 4px 16px -2px black;
+    transition: height 0.5s,padding 0.5s;
+}
+.container-header{
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1em;
+}
+.Advanced-settings{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: fit-content;
+    border-radius: 1em;
+    padding: 1em;
+    margin: 1em;
+    background-color: rgb(180, 180, 180);
+}
+#settingsButton{
+    background-color: rgb(186, 186, 186);
+    border-radius: 0em 1em 1em 0em;
+    padding: 0.25em;
+    padding-left: 1em;
+    cursor: pointer;
+    font-size: 24pt;
+    transition: background-color 0.5s, transform 0.5s;
+    transform: translateY(0.4em) translateX(-0.5em);
+}
+#settingsButton:hover{
+    background-color: rgb(255, 68, 68);
+    transform:scale(1.1) translateY(0.4em) translateX(0em);
+    cursor: pointer;
+}
+.inputRange{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.translateSelfLeft{
+    transform: translateX(-92%);
+}
+.hidden{
+    display: none!important;
+}
+.height0{
+    height: 0!important;
+}
+.rotated90{
+    transform: rotate(90deg)!important;
 }
