@@ -5,7 +5,8 @@ let settings = {
     invertedColor: false,
     w: 300,
     h: 150,
-    isPlaying: false
+    isPlaying: false,
+    useCropping: true
 };
 
 function starterFunction() {
@@ -29,6 +30,11 @@ function addEventListeners() {
     const fileDropVideo = document.getElementById('fileDrop');
     const advSettingsSwitch = document.getElementById('adv_settings_switch');
     const settingsButton = document.getElementById('settingsButton');
+    const useCroppingBtn = document.getElementById('useCropping');
+    useCroppingBtn.addEventListener('click', () => {
+        settings.useCropping = !settings.useCropping;
+    });
+
     settingsButton.addEventListener('click', () => {
         document.getElementById('vcv').classList.toggle('translateSelfLeft');
     });
@@ -127,6 +133,7 @@ function draw(v, bc) {
     if (v.paused || v.ended) return false;
     // First, draw it into the backing canvas
     //Crop video source to fit the canvas
+    if(settings.useCropping) {
     let xCrop = 0;
     let yCrop = 0;
     let wCrop = v.videoWidth;
@@ -139,6 +146,8 @@ function draw(v, bc) {
         hCrop = v.videoWidth;
     }
     bc.drawImage(v, xCrop, yCrop, wCrop, hCrop, 0, 0, settings.w, settings.h);
+    }
+    else bc.drawImage(v, 0, 0, settings.w, settings.h);
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
     pixels = [];
