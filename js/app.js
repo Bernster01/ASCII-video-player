@@ -13,6 +13,9 @@ function starterFunction() {
     addEventListeners();
     displayVideoTime();
     document.getElementById('seekDisplay').style.visibility = 'hidden';
+    document.getElementById('adv_settings_switch').classList.add('rotated90');
+    document.getElementById('Advanced_Settings').style.height = document.getElementById('Advanced_Settings').offsetHeight + 'px';
+    advSettings();
 }
 function addEventListeners() {
     // Get elements
@@ -24,6 +27,14 @@ function addEventListeners() {
     const v = document.getElementById('v');
     const timeSeek = document.getElementById('videoSeek');
     const fileDropVideo = document.getElementById('fileDrop');
+    const advSettingsSwitch = document.getElementById('adv_settings_switch');
+    const settingsButton = document.getElementById('settingsButton');
+    settingsButton.addEventListener('click', () => {
+        document.getElementById('vcv').classList.toggle('translateSelfLeft');
+    });
+    advSettingsSwitch.addEventListener('click', function(){
+        advSettings();
+    });
     // Add event listeners
     //Drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -48,11 +59,9 @@ function addEventListeners() {
         if (video.paused) {
             video.play();
             this.innerHTML = "<i class='fa fa-pause'></i>";
-            document.getElementById('controller').style.opacity = 0.25;
         } else {
             video.pause();
             this.innerHTML = "<i class='fa fa-play'></i>";
-            document.getElementById('controller').style.opacity = 1;
         }
     });
 
@@ -77,7 +86,6 @@ function addEventListeners() {
         const elem = document.getElementById('textRender');
         elem.style.width = settings.w + 'px';
         elem.style.height = settings.w + 'px';
-        document.getElementById('controller').style.opacity = 0.25;
         
 
         draw(this, backcontext);
@@ -89,12 +97,6 @@ function addEventListeners() {
         } else {
             document.getElementById('textRender').classList.remove('robin-mode');
         }
-    });
-    document.getElementById('controller').addEventListener('mouseover', function () {
-        this.style.opacity = 1;
-    });
-    document.getElementById('controller').addEventListener('mouseout', function () {
-        if (settings.isPlaying) this.style.opacity = 0.25;
     });
     document.getElementById('invertColor').addEventListener('change', function () {
         if (this.checked) settings.invertedColor = true; else settings.invertedColor = false;
@@ -250,5 +252,18 @@ function changeVideo(input){
         video.src = URL.createObjectURL(input[0]);
         video.volume = document.getElementById('volume').value;
         video.play();
+}
+function advSettings(){
+    const advSettings = document.getElementById('Advanced_Settings');
+    const advSettingsBtn = document.getElementById('adv_settings_switch');
+    if(advSettings.classList.contains('height0')){
+        advSettings.classList.remove('height0');
+        advSettings.style.padding = '1em';
+        advSettingsBtn.classList.add('rotated90');
+        return;
+    }
+    advSettings.classList.add('height0');
+    advSettings.style.padding = '0em';
+    advSettingsBtn.classList.remove('rotated90');
 }
 document.addEventListener("DOMContentLoaded", starterFunction);

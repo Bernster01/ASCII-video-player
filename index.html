@@ -14,7 +14,7 @@
 <body>
     <div class=container>
         <div id="fileDrop">
-           
+
             <form>
                 <input type="file" id="hiddenInput" accept="video/*" />
                 <span id=textRender></span>
@@ -27,43 +27,66 @@
         </div>
         <video id=v autoplay loop controls webkit-playsinline playsinline></video>
     </div>
-    <div class=video-controller id=controller>
-        <h2>ASCII Video Player - ver 3.1.1</h2>
-        <div>
-            <h3>Basic settings</h3>
-            <input type=range id=volume min=0 max=0.4 value=0.1 step=0.01>
-            <input type=range id=size min=1 max=3 value=2 step=1>
-            <input type=range id=frameRate min=1 max=60 value=30 step=1>
-            <p>Input - select or drop on video display</p>
-            <input type=file id=file accept="video/*">
-            <label for=invertColor>Invert Color</label>
-            <input type=checkbox id=invertColor>
-            <label for=robinMode>Robin Mode</label>
-            <input type=checkbox id=robinMode>
-        </div>
-        <h3>Advanced settings</h3>
-        <div id="Advanced_Settings_Container">
-            <i class="fa fa-chevron-down"></i>
-            <div id="Advanced_Settings">
-                <div class="Advanced-settings">
-                    <h4>Brightness Controll</h4>
-                    <div>
-                        <h5>Brightness threshold</h5>
-                        <label for=brightnessThreshold>Value</label>
-                        <input type=range id=brightnessThreshold min=0 max=255 value=230 step=1>
+    <div class="video-controller-container translateSelfLeft" id="vcv">
+        <div id=settingsButton><i class="fa fa-gear"></i></div>
+        <div class=video-controller id=controller>
+            <h2>ASCII Video Player - ver 3.1.1</h2>
+            <div>
+                <h3>Basic settings</h3>
+                <input type=range id=volume min=0 max=0.4 value=0.1 step=0.01>
+                <input type=range id=size min=1 max=3 value=2 step=1>
+                <input type=range id=frameRate min=1 max=60 value=30 step=1>
+                <p>Input - select or drop on video display</p>
+                <input type=file id=file accept="video/*">
+                <label for=invertColor>Invert Color</label>
+                <input type=checkbox id=invertColor>
+                <label for=robinMode>Robin Mode</label>
+                <input type=checkbox id=robinMode>
+            </div>
+
+            <div id="Advanced_Settings_Container">
+                <div class="container-header">
+                    <i class="fa fa-chevron-right rotated90" id="adv_settings_switch"></i>
+                    <h3>Advanced settings</h3>
+                </div>
+                <div id="Advanced_Settings">
+                    <div class="Advanced-settings">
+                        <h2>Brightness Controll</h2>
+                        <div class="inputRange">
+                            <h5>Brightness threshold</h5>
+                            <label for=brightnessThreshold>Value</label>
+                            <input type=range id=brightnessThreshold min=0 max=255 value=230 step=1>
+                        </div>
+                        <div class="inputRange">
+                            <h5>Brightness reduction</h5>
+                            <label for=brightnessReduction>Value</label>
+                            <input type=range id=brightnessReduction min=0 max=1 value=0.9 step=0.01>
+                        </div>
                     </div>
-                    <div>
-                        <h5>Brightness reduction</h5>
-                        <label for=brightnessReduction>Value</label>
-                        <input type=range id=brightnessReduction min=0 max=1 value=0.9 step=0.01>
+                    <div class="Advanced-settings">
+                        <h2>Cropping</h2>
+                        <div>
+                            <label for="useCropping">Use cropping</label>
+                            <input type=checkbox id="useCropping">
+                        </div>
+                        <div>
+                            <h5>Cropping controll</h5>
+                            <label for=cropTop>Top</label>
+                            <input type=range id=cropTop min=0 max=1 value=0.5 step=0.01>
+                            <label for=cropLeft>Left</label>
+                            <input type=range id=cropLeft min=0 max=1 value=0.5 step=0.01>
+                            <div id="cropUi">
+                                <div id="cropHeader"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
-        
     </div>
     <span id="seekDisplay"></span>
 </body>
-<script src="js/app.js"></script>
+<script src="js/app.js" defer="true"></script>
 
 </html>
