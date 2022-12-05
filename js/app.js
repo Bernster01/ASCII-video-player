@@ -20,6 +20,16 @@ function starterFunction() {
     document.querySelectorAll('input[type="range"]').forEach((input) => { 
         input.addEventListener('mousedown',  () => window.getSelection().removeAllRanges());
     });
+    document.getElementById('textRender').addEventListener('click', () => {
+        if (document.getElementById('v').paused) {
+        document.getElementById('v').play();
+        settings.isPlaying = true;
+
+        } else {
+        document.getElementById('v').pause();
+        settings.isPlaying = false;
+        }
+    });
 }
 function addEventListeners() {
     // Get elements
