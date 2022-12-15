@@ -6,7 +6,10 @@ let settings = {
     w: 300,
     h: 150,
     isPlaying: false,
-    useCropping: true
+    useCropping: true,
+    brightnessThreshold: 230,
+    brightnessThresholdFactor: 0.9,
+    brightness: 1,
 };
 
 function starterFunction() {
@@ -44,6 +47,18 @@ function addEventListeners() {
     const advSettingsSwitch = document.getElementById('adv_settings_switch');
     const settingsButton = document.getElementById('settingsButton');
     const useCroppingBtn = document.getElementById('useCropping');
+    const brightnessThreshold = document.getElementById('brightnessThreshold');
+    const brightness = document.getElementById('brightnessReduction');
+    const brightnessThresholdFactor = document.getElementById('brightnessThresholdFactor');
+    brightnessThresholdFactor.addEventListener('input', function () {
+        settings.brightnessThresholdFactor = this.value;
+    });
+    brightnessThreshold.addEventListener('input', function () {
+        settings.brightnessThreshold = this.value;
+    });
+    brightness.addEventListener('input', function () {
+        settings.brightness = this.value;
+    });
     useCroppingBtn.addEventListener('click', () => {
         settings.useCropping = !settings.useCropping;
     });
@@ -204,10 +219,12 @@ function getChar(brightness) {
     let chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
     if (settings.invertedColor) chars = chars.reverse();
     //Check if the brightness is min or max
-    if (brightness <= 0) return chars[0];
     if (brightness >= 255) return chars[chars.length - 1];
     //If brightness is near max reduce the brightness
-    if (brightness > 230) brightness *= 0.9;
+    if (brightness > settings.brightnessThreshold) brightness *= settings.brightnessThresholdFactor;
+    brightness *= settings.brightness;
+    
+    if (brightness <= 0) return chars[0];
     //Map brightness to a char
     const index = Math.floor(brightness / 256 * chars.length);
     return chars[index];
