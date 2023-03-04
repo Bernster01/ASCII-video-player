@@ -6,7 +6,6 @@ let settings = {
     w: 300,
     h: 150,
     isPlaying: false,
-    useCropping: false,
     brightnessThreshold: 230,
     brightnessThresholdFactor: 0.9,
     brightness: 1,
@@ -38,6 +37,9 @@ function starterFunction() {
         }
     });
 }
+/** 
+* Add event listeners to the elements
+*/
 function addEventListeners() {
     // Get elements
     const file = document.getElementById('file');
@@ -54,13 +56,10 @@ function addEventListeners() {
     const brightness = document.getElementById('brightnessReduction');
     const brightnessThresholdFactor = document.getElementById('brightnessThresholdFactor');
     const useColor = document.getElementById('useColor');
-    useColor.addEventListener('click', () => {
-        settings.useColor = useColor.checked;
-        if(settings.useColor)
-            settings.framRateOverride.boolean = true;
-        else
-            settings.framRateOverride.boolean = false;
 
+    // Add event listeners
+    useColor.addEventListener('click', () => {
+        settings.useColor = settings.framRateOverride.boolean = useColor.checked;
     });
     useColor.addEventListener('mouseover', () => {
         document.getElementById('useColorToolTip').style.display = 'inline';
@@ -68,24 +67,25 @@ function addEventListeners() {
     useColor.addEventListener('mouseleave', () => {
         document.getElementById('useColorToolTip').style.display = 'none';
     });
+
     brightnessThresholdFactor.addEventListener('input', function () {
         settings.brightnessThresholdFactor = this.value;
     });
     brightnessThreshold.addEventListener('input', function () {
         settings.brightnessThreshold = this.value;
     });
+
     brightness.addEventListener('input', function () {
         settings.brightness = this.value;
     });
     
-
     settingsButton.addEventListener('click', () => {
         document.getElementById('vcv').classList.toggle('translateSelfLeft');
     });
     advSettingsSwitch.addEventListener('click', function(){
         advSettings();
     });
-    // Add event listeners
+   
     //Drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         fileDropVideo.addEventListener(eventName, (e) =>{
@@ -100,7 +100,6 @@ function addEventListeners() {
     file.addEventListener('change', function () {
         changeVideo(this.files);
     });
-
 
     volumeControl.addEventListener('input', function(){document.getElementById('v').volume = this.value});
 
@@ -117,8 +116,7 @@ function addEventListeners() {
 
     frameRateControl.addEventListener('input', function(){ settings.frameRate = this.value});
     frameRateControl.addEventListener('dblclick', function(){
-        this.value = 30;
-        settings.frameRate = 30;
+        this.value = settings.frameRate = 30;
     });
     
     sizeControl.addEventListener('change', function(){changeVideoSize(this.value)});
@@ -201,6 +199,20 @@ function draw(v, bc) {
      settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));}
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
+    getPixelData(data);
+
+
+    drawInNumbers();
+    setTimeout(() => {
+        draw(v, bc);
+    }, 1000 / (settings.framRateOverride.boolean ? settings.framRateOverride.value : settings.frameRate));
+} 
+/**
+ * Extracts the pixel data from an canvas image
+ * @param {ImageData} data - The image data from a canvas 
+ * @returns {Array[]} - A matrix of pixels
+ */
+function getPixelData(data){
     pixels = [];
     for (let i = 0; i < settings.h; i++) {
         pixels[i] = pixels[i] || [];
@@ -214,12 +226,6 @@ function draw(v, bc) {
             pixels[i][j] = {R:r,G:g,B:b,brightness:brightness};
         }
     }
-
-
-    drawInNumbers();
-    setTimeout(() => {
-        draw(v, bc);
-    }, 1000 / (settings.framRateOverride.boolean ? settings.framRateOverride.value : settings.frameRate));
 }
 function drawInNumbers() {
     //Get the element
