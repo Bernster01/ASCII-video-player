@@ -176,27 +176,10 @@ function addEventListeners() {
 function draw(v, bc) {
     if (v.paused || v.ended) return false;
     // First, draw it into the backing canvas
-    //Crop video source to fit the canvas
-    if(settings.useCropping) {
-    let xCrop = 0;
-    let yCrop = 0;
-    let wCrop = v.videoWidth;
-    let hCrop = v.videoHeight;
     
-   
-    if (v.videoWidth > v.videoHeight) {
-        xCrop = (v.videoWidth - v.videoHeight) / 2;
-        wCrop = v.videoHeight;
-    } else if (v.videoHeight > v.videoWidth) {
-        yCrop = (v.videoHeight - v.videoWidth) / 2;
-        hCrop = v.videoWidth;
-    }
-    bc.drawImage(v, xCrop, yCrop, wCrop, hCrop, 0, 0, settings.w, settings.h);
-    }
-    else{
     bc.drawImage(v, 0, 0, settings.w, settings.h);
      //Using settings.h change settings.w to keep aspect ratio
-     settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));}
+     settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
     getPixelData(data);
