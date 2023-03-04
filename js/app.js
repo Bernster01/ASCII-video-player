@@ -10,6 +10,8 @@ let settings = {
     brightnessThreshold: 230,
     brightnessThresholdFactor: 0.9,
     brightness: 1,
+    useColor: false,
+    framRateOverride: {boolean: false, value: 8}
 };
 
 function starterFunction() {
@@ -50,6 +52,21 @@ function addEventListeners() {
     const brightnessThreshold = document.getElementById('brightnessThreshold');
     const brightness = document.getElementById('brightnessReduction');
     const brightnessThresholdFactor = document.getElementById('brightnessThresholdFactor');
+    const useColor = document.getElementById('useColor');
+    useColor.addEventListener('click', () => {
+        settings.useColor = useColor.checked;
+        if(settings.useColor)
+            settings.framRateOverride.boolean = true;
+        else
+            settings.framRateOverride.boolean = false;
+
+    });
+    useColor.addEventListener('mouseover', () => {
+        document.getElementById('useColorToolTip').style.display = 'inline';
+    });
+    useColor.addEventListener('mouseleave', () => {
+        document.getElementById('useColorToolTip').style.display = 'none';
+    });
     brightnessThresholdFactor.addEventListener('input', function () {
         settings.brightnessThresholdFactor = this.value;
     });
@@ -61,6 +78,7 @@ function addEventListeners() {
     });
     useCroppingBtn.addEventListener('click', () => {
         settings.useCropping = !settings.useCropping;
+        setCorrectWidth();
     });
 
     settingsButton.addEventListener('click', () => {
@@ -121,9 +139,11 @@ function addEventListeners() {
         elem.style.width = settings.w + 'px';
         elem.style.height = settings.w + 'px';
         
+        
 
         draw(this, backcontext);
         setCorrectWidth();
+        setTimeout(setCorrectWidth, 100);
     }, false);
     document.getElementById('robinMode').addEventListener('change', function () {
         if (this.checked) {
@@ -166,6 +186,9 @@ function draw(v, bc) {
     let yCrop = 0;
     let wCrop = v.videoWidth;
     let hCrop = v.videoHeight;
+    
+    //Using settings.h change settings.w to keep aspect ratio
+    settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));
     if (v.videoWidth > v.videoHeight) {
         xCrop = (v.videoWidth - v.videoHeight) / 2;
         wCrop = v.videoHeight;
@@ -175,7 +198,8 @@ function draw(v, bc) {
     }
     bc.drawImage(v, xCrop, yCrop, wCrop, hCrop, 0, 0, settings.w, settings.h);
     }
-    else bc.drawImage(v, 0, 0, settings.w, settings.h);
+    else
+    bc.drawImage(v, 0, 0, settings.w, settings.h);
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
     pixels = [];
@@ -188,7 +212,7 @@ function draw(v, bc) {
             const b = data[index + 2];
             const brightness = (3 * r + 4 * g + b) >>> 3;
 
-            pixels[i][j] = brightness;
+            pixels[i][j] = {R:r,G:g,B:b,brightness:brightness};
         }
     }
 
@@ -196,18 +220,22 @@ function draw(v, bc) {
     drawInNumbers();
     setTimeout(() => {
         draw(v, bc);
-    }, 1000 / settings.frameRate);
+    }, 1000 / (settings.framRateOverride.boolean ? settings.framRateOverride.value : settings.frameRate));
 }
 function drawInNumbers() {
     //Get the element
     const textRender = document.getElementById('textRender');
     let text = "";
+    
     //Loop through the pixels matrix
     for (let i = 0; i < pixels.length; i++) {
         for (let j = 0; j < pixels[i].length; j++) {
             //Get char from brightness
-            let char = getChar(pixels[i][j]);
-            text += char;
+            let char = getChar(pixels[i][j].brightness);
+            const color = `rgb(${pixels[i][j].R},${pixels[i][j].G},${pixels[i][j].B})`;
+            if(settings.useColor)
+            text += `<span style="color:${color};">${char}</span>`;
+            else text += char;
         }
         //Add a new line
         text += "\n";
@@ -230,15 +258,29 @@ function getChar(brightness) {
     return chars[index];
 }
 function setCorrectWidth() {
-    const pixelFactor = 3.86;
-    const heightFactor = 1.12;
+    console.log(pixels[0].length);
+    if(settings.useCropping){
+        const pixelFactor = 3.86;
+        const heightFactor = 1.12;
+        const width = pixels[0].length * pixelFactor;
+        const textRender = document.getElementById('textRender');
+        const videoControlls = document.getElementById('video-seek-container');
+    
+        textRender.style.width = width + 'px';
+        textRender.style.height = width * heightFactor + 'px';
+        videoControlls.style.width = width + 'px';
+    }else{
+    const pixelFactor = 3.6;
+    const heightFactor = 2.56;
     const width = pixels[0].length * pixelFactor;
+    const height = pixels.length * pixelFactor * heightFactor;
     const textRender = document.getElementById('textRender');
     const videoControlls = document.getElementById('video-seek-container');
 
     textRender.style.width = width + 'px';
-    textRender.style.height = width * heightFactor + 'px';
+    textRender.style.height = height + 'px';
     videoControlls.style.width = width + 'px';
+    }
 }
 function changeVideoSize(value) {
     const sizes = ["4", "2", "1"];
@@ -291,6 +333,7 @@ function changeVideo(input){
         video.src = URL.createObjectURL(input[0]);
         video.volume = document.getElementById('volume').value;
         video.play();
+        
 }
 function advSettings(){
     const advSettings = document.getElementById('Advanced_Settings');
