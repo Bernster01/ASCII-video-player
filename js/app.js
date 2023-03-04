@@ -6,7 +6,7 @@ let settings = {
     w: 300,
     h: 150,
     isPlaying: false,
-    useCropping: true,
+    useCropping: false,
     brightnessThreshold: 230,
     brightnessThresholdFactor: 0.9,
     brightness: 1,
@@ -48,7 +48,6 @@ function addEventListeners() {
     const fileDropVideo = document.getElementById('fileDrop');
     const advSettingsSwitch = document.getElementById('adv_settings_switch');
     const settingsButton = document.getElementById('settingsButton');
-    const useCroppingBtn = document.getElementById('useCropping');
     const brightnessThreshold = document.getElementById('brightnessThreshold');
     const brightness = document.getElementById('brightnessReduction');
     const brightnessThresholdFactor = document.getElementById('brightnessThresholdFactor');
@@ -76,13 +75,7 @@ function addEventListeners() {
     brightness.addEventListener('input', function () {
         settings.brightness = this.value;
     });
-    useCroppingBtn.addEventListener('click', () => {
-        settings.useCropping = !settings.useCropping;
-        if(settings.useCropping)
-            settings.w = 300 / settings.size;
-            setCorrectWidth();
-            setTimeout(setCorrectWidth, 100);
-    });
+    
 
     settingsButton.addEventListener('click', () => {
         document.getElementById('vcv').classList.toggle('translateSelfLeft');
@@ -248,7 +241,8 @@ function drawInNumbers() {
 }
 function getChar(brightness) {
     //Map brightness to a char
-    let chars = ["&nbsp;", ".", ",", "+", "#", "&#x25A1;", "0", "$", "@"];
+    //"&#x25A1;",
+    let chars = ["&nbsp;", ".", ",", "+", "#", "0", "$", "@"];
     if (settings.invertedColor) chars = chars.reverse();
     //Check if the brightness is min or max
     if (brightness >= 255) return chars[chars.length - 1];
@@ -274,10 +268,9 @@ function setCorrectWidth() {
         textRender.style.height = width * heightFactor + 'px';
         videoControlls.style.width = width + 'px';
     }else{
-    const pixelFactor = 3.6;
-    const heightFactor = 2.5;
-    const width = pixels[0].length * pixelFactor;
-    const height = pixels.length * pixelFactor * heightFactor;
+    const fontPixelSize = 7;
+    const width = pixels[0].length * fontPixelSize;
+    const height = pixels.length * fontPixelSize;
     const textRender = document.getElementById('textRender');
     const videoControlls = document.getElementById('video-seek-container');
 

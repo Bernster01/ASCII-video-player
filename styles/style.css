@@ -1,8 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
 body {
     background: rgb(0, 0, 0);
 }
-
+@font-face{
+    font-family: square;
+    src: url(../files/square.ttf);
+}
 /*Hide scrollbar*/
 body::-webkit-scrollbar {
     display: none;
@@ -45,6 +49,7 @@ body::-webkit-scrollbar {
 #textRender {
     font-size: 7px;
     font-family: 'Roboto Mono', monospace;
+    font-family: square;
     color: white;
     overflow: hidden;
     border: 0.5em solid rgb(186, 186, 186);
