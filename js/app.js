@@ -13,7 +13,7 @@ let settings = {
     useColor: false,
     framRateOverride: {boolean: false, value: 8}
 };
-fetch('./js/info.json').then((response) => response.json()).then((data) => {
+fetch('./data/info.json').then((response) => response.json()).then((data) => {
     document.getElementById('version').innerHTML = data.version;
 });
 function starterFunction() {
