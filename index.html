@@ -33,9 +33,23 @@
             <h2>ASCII Video Player - ver <span id="version"></span></h2>
             <div>
                 <h3>Basic settings</h3>
-                <input type=range id=volume min=0 max=0.4 value=0.1 step=0.01>
-                <input type=range id=size min=1 max=3 value=2 step=1>
-                <input type=range id=frameRate min=1 max=60 value=30 step=1>
+                <div class="basicSetting">
+                    <div class="setting">
+                        <label for="volume">Volume - <span id="volumeValue"></span></label>
+                        <input type=range id=volume min=0 max=1 value=0.1 step=0.01>
+                    </div>
+                    <div class="setting">
+                        <label for="size">Size - <span id="sizeValue"></span></label>
+                        <input type=range id=size min=1 max=3 value=2 step=1>
+                        
+                    </div>
+                    <div class="setting">
+                        <label for="frameRate">Framerate - <span id="frameRateValue"></span></label>
+                        <input type=range id=frameRate min=1 max=60 value=30 step=1>
+                    </div>
+                </div>
+                
+                <button onclick="setCorrectWidth()">Fix size</button>
                 <p>Input - select or drop on video display</p>
                 <input type=file id=file accept="video/*">
                 <label for=invertColor>Invert Color</label>
@@ -48,7 +62,7 @@
 
             <div id="Advanced_Settings_Container">
                 <div class="container-header">
-                    <i class="fa fa-chevron-right rotated90" id="adv_settings_switch"></i>
+                
                     <h3>Advanced settings</h3>
                 </div>
                 <div id="Advanced_Settings">
@@ -73,6 +87,6 @@
     </div>
     <span id="seekDisplay"></span>
 </body>
-<script src="js/app.js" defer="true"></script>
+<script src="js/app.js" ></script>
 
 </html>
