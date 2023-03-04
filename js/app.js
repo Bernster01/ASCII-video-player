@@ -78,7 +78,10 @@ function addEventListeners() {
     });
     useCroppingBtn.addEventListener('click', () => {
         settings.useCropping = !settings.useCropping;
-        setCorrectWidth();
+        if(settings.useCropping)
+            settings.w = 300 / settings.size;
+            setCorrectWidth();
+            setTimeout(setCorrectWidth, 100);
     });
 
     settingsButton.addEventListener('click', () => {
@@ -187,8 +190,7 @@ function draw(v, bc) {
     let wCrop = v.videoWidth;
     let hCrop = v.videoHeight;
     
-    //Using settings.h change settings.w to keep aspect ratio
-    settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));
+   
     if (v.videoWidth > v.videoHeight) {
         xCrop = (v.videoWidth - v.videoHeight) / 2;
         wCrop = v.videoHeight;
@@ -198,8 +200,10 @@ function draw(v, bc) {
     }
     bc.drawImage(v, xCrop, yCrop, wCrop, hCrop, 0, 0, settings.w, settings.h);
     }
-    else
+    else{
     bc.drawImage(v, 0, 0, settings.w, settings.h);
+     //Using settings.h change settings.w to keep aspect ratio
+     settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));}
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
     pixels = [];
@@ -258,7 +262,7 @@ function getChar(brightness) {
     return chars[index];
 }
 function setCorrectWidth() {
-    console.log(pixels[0].length);
+    console.log('setCorrectWidth', settings.useCropping);
     if(settings.useCropping){
         const pixelFactor = 3.86;
         const heightFactor = 1.12;
@@ -271,7 +275,7 @@ function setCorrectWidth() {
         videoControlls.style.width = width + 'px';
     }else{
     const pixelFactor = 3.6;
-    const heightFactor = 2.56;
+    const heightFactor = 2.5;
     const width = pixels[0].length * pixelFactor;
     const height = pixels.length * pixelFactor * heightFactor;
     const textRender = document.getElementById('textRender');
