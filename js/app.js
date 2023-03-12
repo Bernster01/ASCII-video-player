@@ -280,7 +280,6 @@ function getChar(brightness) {
     return chars[index];
 }
 function setCorrectWidth() {
-    console.log('setCorrectWidth', pixels);
     const width = pixels[0].length * settings.fontSize;
     const height = pixels.length * settings.fontSize;
     const textRender = document.getElementById('textRender');
@@ -305,6 +304,7 @@ function changeVideoSize(value) {
     setTimeout(() => {
         video.play();
         updateLabel("sizeValue");
+
         setCorrectWidth();
     }, 75);
 
@@ -347,7 +347,7 @@ function changeVideo(input) {
     video.play();
     updateLabel("sizeValue");
     setTimeout(() => {
-        changeVideoSize(settings.size);
+        changeVideoSize(document.getElementById('size').value);
     }, 75);
     
 }
