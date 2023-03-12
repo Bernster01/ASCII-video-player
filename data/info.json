@@ -1,5 +1,5 @@
 {
-    "version":"3.2.1",
+    "version":"4.0.0",
     "short_description":"A website that takes a video and turns it into ascii art.",
     "full_description":"A website that takes a video and turns it into ascii art. It paste the video into a canvas and takes the pixel data from that. By using the brightness a character is choosen and placed in a string that gets displayted in a span tag."
 }
