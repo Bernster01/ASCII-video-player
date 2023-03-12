@@ -390,6 +390,9 @@ function copyText() {
     dummy.value = text;
     //Cahnge "&nbsp;" to " "
     dummy.value = dummy.value.replace(/&nbsp;/g, " ");
+    //add a new line at the end
+    dummy.value += "\n";
+    dummy.value += "Made with Ascii video player by Bernster01 - https://bernster01.github.io/ASCII-video-player/"
     dummy.select();
     document.execCommand("copy");
     document.body.removeChild(dummy);
