@@ -10,7 +10,9 @@ let settings = {
     brightness: 1,
     useColor: false,
     fontSize:14
+    
 };
+currentFrameData ="";
 fetch('./data/info.json').then((response) => response.json()).then((data) => {
     document.getElementById('version').innerHTML = data.version;
 });
@@ -253,15 +255,19 @@ function drawInNumbers(pixels) {
 }
 function getText(pixels, type) {
     let text = "";
+    let frameData = [];
     //Loop through the pixels matrix
     for (let hPixel = 0; hPixel < pixels.length; hPixel++) {
         for (let wPixel = 0; wPixel < pixels[hPixel].length; wPixel++) {
             //Get char from brightness
             let char = getChar(pixels[hPixel][wPixel].brightness);
             text += char;
+            frameData.push(char);
         }
         text += "\n";
+        frameData.push("\n");
     }
+    currentFrameData = frameData;
     return text;
 }
 function getChar(brightness) {
@@ -373,5 +379,19 @@ function drawInColor(pixelData) {
             ctx.fillText(char, wPixel * settings.fontSize, hPixel * settings.fontSize);
         }
     }
+}
+function copyText() {
+    let text="";
+    for(let i = 0; i < currentFrameData.length; i++){
+        text += currentFrameData[i];
+    }
+    const dummy = document.createElement("textarea");
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    //Cahnge "&nbsp;" to " "
+    dummy.value = dummy.value.replace(/&nbsp;/g, " ");
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
 }
 document.addEventListener("DOMContentLoaded", starterFunction);
