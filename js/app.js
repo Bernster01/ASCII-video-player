@@ -381,7 +381,7 @@ function drawInColor(pixelData) {
     }
 }
 function copyText() {
-    let text="";
+    let text="Made with Ascii video player by Bernster01 - https://bernster01.github.io/ASCII-video-player/\n\n";
     for(let i = 0; i < currentFrameData.length; i++){
         text += currentFrameData[i];
     }
