@@ -9,7 +9,7 @@ let settings = {
     brightnessThresholdFactor: 0.9,
     brightness: 1,
     useColor: false,
-    framRateOverride: { boolean: false, value: 8 }
+    fontSize:14
 };
 fetch('./data/info.json').then((response) => response.json()).then((data) => {
     document.getElementById('version').innerHTML = data.version;
@@ -78,7 +78,9 @@ function addEventListeners() {
 
     // Add event listeners
     useColor.addEventListener('click', () => {
-        settings.useColor = settings.framRateOverride.boolean = useColor.checked;
+        settings.useColor = useColor.checked;
+        document.getElementById('color-canvas-container').style.display = settings.useColor ? 'flex' : 'none';
+        document.getElementById('textRender').style.opacity = settings.useColor ? '0' : '1';
     });
     useColor.addEventListener('mouseover', () => {
         document.getElementById('useColorToolTip').style.display = 'inline';
@@ -160,6 +162,9 @@ function addEventListeners() {
         const elem = document.getElementById('textRender');
         elem.style.width = settings.w + 'px';
         elem.style.height = settings.w + 'px';
+        const colorCanvas = document.getElementById('color-canvas');
+        colorCanvas.width = settings.w;
+        colorCanvas.height = settings.h;
 
 
 
@@ -209,11 +214,13 @@ function draw(v, bc) {
     const data = idata.data;
     let pixels = getPixelData(data);
 
-
-    drawInNumbers(pixels);
+    if (settings.useColor)
+        drawInColor(pixels);
+    else
+        drawInNumbers(pixels);
     setTimeout(() => {
         draw(v, bc);
-    }, 1000 / (settings.framRateOverride.boolean ? settings.framRateOverride.value : settings.frameRate));
+    }, 1000 / settings.frameRate);
 }
 /**
  * Extracts the pixel data from an canvas image
@@ -240,22 +247,22 @@ function drawInNumbers(pixels) {
     //Get the element
     const textRender = document.getElementById('textRender');
 
+    const text = getText(pixels);
+
+    textRender.innerHTML = text;
+}
+function getText(pixels, type) {
     let text = "";
     //Loop through the pixels matrix
     for (let hPixel = 0; hPixel < pixels.length; hPixel++) {
         for (let wPixel = 0; wPixel < pixels[hPixel].length; wPixel++) {
             //Get char from brightness
             let char = getChar(pixels[hPixel][wPixel].brightness);
-            const color = `rgb(${pixels[hPixel][wPixel].R},${pixels[hPixel][wPixel].G},${pixels[hPixel][wPixel].B})`;
-            if (settings.useColor) {
-                text += `<span style="color:${color};">${char}</span>`;
-                continue;
-            }
             text += char;
         }
         text += "\n";
     }
-    textRender.innerHTML = text;
+    return text;
 }
 function getChar(brightness) {
     //Map brightness to a char
@@ -274,12 +281,13 @@ function getChar(brightness) {
 }
 function setCorrectWidth() {
     console.log('setCorrectWidth', pixels);
-    const fontPixelSize = 7;
-    const width = pixels[0].length * fontPixelSize;
-    const height = pixels.length * fontPixelSize;
+    const width = pixels[0].length * settings.fontSize;
+    const height = pixels.length * settings.fontSize;
     const textRender = document.getElementById('textRender');
     const videoControlls = document.getElementById('video-seek-container');
-
+    const colorCanvas = document.getElementById('color-canvas');
+    colorCanvas.style.width = width + 'px';
+    colorCanvas.style.height = height + 'px';
     textRender.style.width = width + 'px';
     textRender.style.height = height + 'px';
     videoControlls.style.width = width + 'px';
@@ -288,12 +296,16 @@ function setCorrectWidth() {
 function changeVideoSize(value) {
     const sizes = ["4", "2", "1"];
     settings.size = sizes[value - 1];
+    settings.fontSize = 7 * settings.size;
+    //Change css variables
+    document.documentElement.style.setProperty('--font-size', settings.fontSize + 'px');
     const video = document.getElementById('v');
     v.pause();
     settings.isPlaying = false;
     setTimeout(() => {
         video.play();
         updateLabel("sizeValue");
+        setCorrectWidth();
     }, 75);
 
 }
@@ -334,6 +346,30 @@ function changeVideo(input) {
     video.volume = document.getElementById('volume').value;
     video.play();
     updateLabel("sizeValue");
+    setTimeout(() => {
+        changeVideoSize(settings.size);
+    }, 75);
+    
 }
-
+function drawInColor(pixelData) {
+    const colorCanvas = document.getElementById('color-canvas');
+    const ctx = colorCanvas.getContext('2d', { alpha: false });
+    ctx.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+    //Set the canvas size
+    if (pixelData[0].length * settings.fontSize != colorCanvas.width || pixelData.length * settings.fontSize  != colorCanvas.height) {
+        colorCanvas.width = pixelData[0].length * settings.fontSize;
+        colorCanvas.height = pixelData.length * settings.fontSize;
+        //Increase canvas performance
+        ctx.imageSmoothingEnabled = false;
+    }
+    //Draw the text on the canvas
+    ctx.font = `${settings.fontSize}px square`;
+    for (let hPixel = 0; hPixel < pixelData.length; hPixel++) {
+        for (let wPixel = 0; wPixel < pixelData[hPixel].length; wPixel++) {
+            const pixel = pixelData[hPixel][wPixel];
+            ctx.fillStyle = `rgb(${pixel.R},${pixel.G},${pixel.B})`;
+            ctx.fillText(getChar(pixel.brightness), wPixel * settings.fontSize, hPixel * settings.fontSize);
+        }
+    }
+}
 document.addEventListener("DOMContentLoaded", starterFunction);

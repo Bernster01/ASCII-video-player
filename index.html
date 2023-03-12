@@ -18,6 +18,9 @@
             <form>
                 <input type="file" id="hiddenInput" accept="video/*" />
                 <span id=textRender></span>
+                <div id="color-canvas-container">
+                    <canvas id="color-canvas"></canvas>
+                </div>
             </form>
         </div>
         <div id=video-seek-container>
@@ -25,6 +28,7 @@
             <input type=range id=videoSeek min=0 max=100 value=0>
             <span id=time></span>
         </div>
+        
         <video id=v autoplay loop controls webkit-playsinline playsinline></video>
     </div>
     <div class="video-controller-container translateSelfLeft" id="vcv">

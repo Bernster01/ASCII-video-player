@@ -2,6 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
 body {
     background: rgb(0, 0, 0);
+   
+}
+root {
+    --font-size: 14px;
 }
 @font-face{
     font-family: square;
@@ -47,13 +51,13 @@ body::-webkit-scrollbar {
 }
 
 #textRender {
-    font-size: 7px;
+    font-size: var(--font-size);
     font-family: 'Roboto Mono', monospace;
     font-family: square;
     color: white;
     overflow: hidden;
-    border: 0.5em solid rgb(186, 186, 186);
-    border-radius: 1em;
+    border: 0.5rem solid rgb(186, 186, 186);
+    border-radius: 1rem;
     background-color: rgb(28, 28, 28);
     width: 300px;
     height: 150px;
@@ -252,4 +256,22 @@ input[type="range"]{
 .setting{
     display: flex;
     flex-direction: column;
+}
+#color-canvas{
+    border: 0.5rem solid rgb(186, 186, 186);
+    background-color: rgb(28, 28, 28);
+    
+    
+    border-radius: 0.5rem;
+
+}
+#color-canvas-container{
+    display:none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    position: absolute;
+    overflow: hidden;
+
 }
