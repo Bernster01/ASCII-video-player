@@ -9,10 +9,10 @@ let settings = {
     brightnessThresholdFactor: 0.9,
     brightness: 1,
     useColor: false,
-    fontSize:14
-    
+    fontSize: 14
+
 };
-currentFrameData ="";
+currentFrameData = "";
 fetch('./data/info.json').then((response) => response.json()).then((data) => {
     document.getElementById('version').innerHTML = data.version;
 });
@@ -273,6 +273,7 @@ function getText(pixels, type) {
 function getChar(brightness) {
     //Map brightness to a char
     let chars = ["&nbsp;", ".", ",", "+", "%", "#", "0", "$", "@"];
+    // chars = ["⠄","⠈","⣿"]
     if (settings.invertedColor) chars = chars.reverse();
     //Check if the brightness is min or max
     if (brightness >= 255) return chars[chars.length - 1];
@@ -355,14 +356,14 @@ function changeVideo(input) {
     setTimeout(() => {
         changeVideoSize(document.getElementById('size').value);
     }, 75);
-    
+
 }
 function drawInColor(pixelData) {
     const colorCanvas = document.getElementById('color-canvas');
     const ctx = colorCanvas.getContext('2d', { alpha: false });
     ctx.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
     //Set the canvas size
-    if (pixelData[0].length * settings.fontSize != colorCanvas.width || pixelData.length * settings.fontSize  != colorCanvas.height) {
+    if (pixelData[0].length * settings.fontSize != colorCanvas.width || pixelData.length * settings.fontSize != colorCanvas.height) {
         colorCanvas.width = pixelData[0].length * settings.fontSize;
         colorCanvas.height = pixelData.length * settings.fontSize;
         //Increase canvas performance
@@ -381,20 +382,158 @@ function drawInColor(pixelData) {
     }
 }
 function copyText() {
-    let text="Made with Ascii video player by Bernster01 - https://bernster01.github.io/ASCII-video-player/\n\n";
-    for(let i = 0; i < currentFrameData.length; i++){
+    let text = "Made with Ascii video player by Bernster01 - https://bernster01.github.io/ASCII-video-player/\n\n";
+    for (let i = 0; i < currentFrameData.length; i++) {
         text += currentFrameData[i];
     }
     const dummy = document.createElement("textarea");
     document.body.appendChild(dummy);
     dummy.value = text;
     //Cahnge "&nbsp;" to " "
-    dummy.value = dummy.value.replace(/&nbsp;/g, " ");
+    // chars = ["⠄","⠈","⣿"]
+    dummy.value = dummy.value.replace(/&nbsp;/g, " ");;
     //add a new line at the end
     dummy.value += "\n";
     dummy.value += "Made with Ascii video player by Bernster01 - https://bernster01.github.io/ASCII-video-player/"
     dummy.select();
     document.execCommand("copy");
     document.body.removeChild(dummy);
+}
+function renderAscii(pixelData) {
+    //Create the canvas
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    //Set the canvas size
+    if (pixelData[0].length * settings.fontSize != canvas.width || pixelData.length * settings.fontSize != canvas.height) {
+        canvas.width = pixelData[0].length * settings.fontSize;
+        canvas.height = pixelData.length * settings.fontSize;
+        //Increase canvas performance
+        ctx.imageSmoothingEnabled = false;
+    }
+    //Draw the text on the canvas
+    ctx.font = `${settings.fontSize}px square`;
+    for (let hPixel = 0; hPixel < pixelData.length; hPixel++) {
+        for (let wPixel = 0; wPixel < pixelData[hPixel].length; wPixel++) {
+            const pixel = pixelData[hPixel][wPixel];
+            ctx.fillStyle = `rgb(${pixel.R},${pixel.G},${pixel.B})`;
+            let char = getChar(pixel.brightness);
+            if (char == "&nbsp;") char = " ";
+            ctx.fillText(char, wPixel * settings.fontSize, hPixel * settings.fontSize);
+        }
+    }
+}
+async function downloadAsciiVideo() {
+    //render the video using the current settings
+    //get the video element
+    const video = document.getElementById('v');
+    //Extract frames from video 
+    const videoData = await extractFrames(video);
+    console.log("Data extracted");
+    console.log(videoData);
+    let frames = [];
+    console.log("Rendering");
+    for (let i = 0; i < videoData.length; i++) {
+        frames.push(drawInAscii(videoData[i].data));
+    }
+    console.log("Rendered");
+    
+    console.log("compiling video")
+    //Convert the base64 data to images
+    // const images = [];
+    // for (let i = 0; i < frames.length; i++) {
+    //     let img = new Image();
+    //     img.src = frames[i];
+    //     images.push(img);
+    //     document.body.appendChild(img);
+    // }
+    //Convert the images to a video
+    const encoder = new Whammy.Video(settings.frameRate);
+    for (let i = 0; i < frames.length; i++) {
+        encoder.add(frames[i]);
+    }
+    encoder.compile(false, (output) => {
+        console.log("Video compiled");
+        //Download the video
+        const blob = new Blob([output], { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        const video = document.createElement('video');
+        video.src = url;
+        video.controls = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.muted = true;
+        document.body.appendChild(video);
+    });
+    
+    
+    
+}
+function drawInAscii(pixelData) {
+
+    //Create the canvas
+    const canvas = document.createElement('canvas');
+
+    const ctx = canvas.getContext('2d', { alpha: false });
+    //Set the canvas size
+    if (pixelData[0].length * settings.fontSize != canvas.width || pixelData.length * settings.fontSize != canvas.height) {
+        canvas.width = pixelData[0].length * settings.fontSize;
+        canvas.height = pixelData.length * settings.fontSize;
+        //Increase canvas performance
+        ctx.imageSmoothingEnabled = false;
+    }
+    //Draw the text on the canvas
+  
+    ctx.font = `${settings.fontSize}px square`;
+    for (let hPixel = 0; hPixel < pixelData.length; hPixel++) {
+        for (let wPixel = 0; wPixel < pixelData[hPixel].length; wPixel++) {
+            const pixel = pixelData[hPixel][wPixel];
+            ctx.fillStyle = `white`;
+            let char = getChar(pixel.brightness);
+            if (char == "&nbsp;") char = " ";
+            ctx.fillText(char, wPixel * settings.fontSize, hPixel * settings.fontSize);
+        }
+    }
+    
+    return canvas;
+
+}
+async function extractFrames(video) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const cw = Math.floor(video.clientWidth);
+    const ch = Math.floor(video.clientHeight);
+    canvas.width = cw;
+    canvas.height = ch;
+    const frames = [];
+    let img;
+    let time = 0;
+    const interval = 1000 / settings.frameRate;
+
+    let duration = video.duration * settings.frameRate;
+    console.log(duration);
+    //Get all the frames from the video
+    for (let i = 0; i < duration; i++) {
+        img = await getFrame(video, ctx, i * interval,i);
+        frames.push(img);
+    }
+    //sort the frames
+    frames.sort((a, b) => {
+        return a.frameNumber - b.frameNumber;
+    });
+    return frames;
+}
+function getFrame(video, ctx, seekTo,frameNumber) {
+    //Get the frame from the video in base64
+    return new Promise((resolve, reject) => {
+        video.currentTime = seekTo / 1000;
+        video.addEventListener('seeked', () => {
+            ctx.drawImage(video, 0, 0, settings.w, settings.h);
+            let idata = ctx.getImageData(0, 0, settings.w, settings.h);
+            let data = idata.data;
+            resolve({data: getPixelData(data),frameNumber: frameNumber});
+        }, { once: true });
+    });
+
+
 }
 document.addEventListener("DOMContentLoaded", starterFunction);
