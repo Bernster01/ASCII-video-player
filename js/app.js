@@ -458,6 +458,8 @@ function drawInAscii(pixelData) {
         for (let wPixel = 0; wPixel < pixelData[hPixel].length; wPixel++) {
             const pixel = pixelData[hPixel][wPixel];
             ctx.fillStyle = `white`;
+            if(settings.useColor)
+                ctx.fillStyle = `rgb(${pixel.R},${pixel.G},${pixel.B})`;
             let char = getChar(pixel.brightness);
             if (char == "&nbsp;") char = " ";
             ctx.fillText(char, wPixel * settings.fontSize, hPixel * settings.fontSize);
