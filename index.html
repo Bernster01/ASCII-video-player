@@ -28,6 +28,7 @@
             <input type=range id=videoSeek min=0 max=100 value=0>
             <span id=time></span>
         </div>
+        <button onclick="downloadAsciiVideo()">Download Video</button>
         
         <video id=v autoplay loop controls webkit-playsinline playsinline></video>
     </div>
@@ -55,7 +56,6 @@
                 
                 <button onclick="setCorrectWidth()">Fix size</button>
                 <button onclick="copyText()">Copy Text</button>
-                <button onclick="downloadAsciiVideo()">Download Video</button>
                 <p>Input - select or drop on video display</p>
                 <input type=file id=file accept="video/*">
                 <label for=invertColor>Invert Color</label>

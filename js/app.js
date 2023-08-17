@@ -433,7 +433,7 @@ async function downloadAsciiVideo() {
     videoPlayer.src = URL.createObjectURL(new Blob([output], { type: "video/webm" }));
     videoPlayer.controls = true;
     videoPlayer.autoplay = true;
-
+    videoPlayer.loop = true;
     document.body.appendChild(videoPlayer);
     console.log("Done!");
 }
