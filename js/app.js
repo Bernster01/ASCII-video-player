@@ -1,6 +1,6 @@
 let settings = {
     size: 2,
-    frameRate: 30,
+    frameRate: 24,
     invertedColor: false,
     w: 300,
     h: 150,
@@ -399,90 +399,60 @@ function copyText() {
     document.execCommand("copy");
     document.body.removeChild(dummy);
 }
-function renderAscii(pixelData) {
-    //Create the canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { alpha: false });
-    //Set the canvas size
-    if (pixelData[0].length * settings.fontSize != canvas.width || pixelData.length * settings.fontSize != canvas.height) {
-        canvas.width = pixelData[0].length * settings.fontSize;
-        canvas.height = pixelData.length * settings.fontSize;
-        //Increase canvas performance
-        ctx.imageSmoothingEnabled = false;
-    }
-    //Draw the text on the canvas
-    ctx.font = `${settings.fontSize}px square`;
-    for (let hPixel = 0; hPixel < pixelData.length; hPixel++) {
-        for (let wPixel = 0; wPixel < pixelData[hPixel].length; wPixel++) {
-            const pixel = pixelData[hPixel][wPixel];
-            ctx.fillStyle = `rgb(${pixel.R},${pixel.G},${pixel.B})`;
-            let char = getChar(pixel.brightness);
-            if (char == "&nbsp;") char = " ";
-            ctx.fillText(char, wPixel * settings.fontSize, hPixel * settings.fontSize);
-        }
-    }
-}
 async function downloadAsciiVideo() {
-    //render the video using the current settings
-    //get the video element
     const video = document.getElementById('v');
-    //Extract frames from video 
+    console.log("Extracting frames...");
+    // Extract frames from video to pixel data
     const videoData = await extractFrames(video);
-    console.log("Data extracted");
-    console.log(videoData);
-    let frames = [];
-    console.log("Rendering");
+    console.log("Rendering frames...");
+    let data = [];
     for (let i = 0; i < videoData.length; i++) {
-        frames.push(drawInAscii(videoData[i].data));
+        //draw the frame in ascii
+        data.push(drawInAscii(videoData[i].data));
+        console.log("Rendered frame " + i + " of " + videoData.length + " in "+data[i].time+" ms");
     }
-    console.log("Rendered");
-    
-    console.log("compiling video")
-    //Convert the base64 data to images
-    // const images = [];
-    // for (let i = 0; i < frames.length; i++) {
-    //     let img = new Image();
-    //     img.src = frames[i];
-    //     images.push(img);
-    //     document.body.appendChild(img);
-    // }
+    console.log("Creating encoder...");
     //Convert the images to a video
     const encoder = new Whammy.Video(settings.frameRate);
-    for (let i = 0; i < frames.length; i++) {
-        encoder.add(frames[i]);
+    console.log("Adding frames to encoder...");
+    for (let i = 0; i < data.length; i++) {
+        encoder.add(data[i].data);
     }
-    encoder.compile(false, (output) => {
-        console.log("Video compiled");
-        //Download the video
-        const blob = new Blob([output], { type: "video/webm" });
-        const url = URL.createObjectURL(blob);
-        const video = document.createElement('video');
-        video.src = url;
-        video.controls = true;
-        video.autoplay = true;
-        video.loop = true;
-        video.muted = true;
-        document.body.appendChild(video);
-    });
-    
-    
-    
+    console.log("Encoding video...");
+    // Extract audio from video and compile video frames in parallel
+    const [output] = await Promise.all([
+        new Promise(resolve => {
+            encoder.compile(false, result => {
+                resolve(result);
+            });
+        })
+    ]);
+    // Output the combinedBlob to the console
+    console.log("Creating video element...")
+    let videoPlayer = document.createElement("video");
+    videoPlayer.src = URL.createObjectURL(new Blob([output], { type: "video/webm" }));
+    videoPlayer.controls = true;
+    videoPlayer.autoplay = true;
+
+    document.body.appendChild(videoPlayer);
+    console.log("Done!");
 }
+
 function drawInAscii(pixelData) {
-
+    const startTimer = new Date().getTime(); 
     //Create the canvas
-    const canvas = document.createElement('canvas');
+    const asciiCanvas = document.createElement('canvas');
 
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = asciiCanvas.getContext('2d', { alpha: false, willReadFrequently: true });
     //Set the canvas size
-    if (pixelData[0].length * settings.fontSize != canvas.width || pixelData.length * settings.fontSize != canvas.height) {
-        canvas.width = pixelData[0].length * settings.fontSize;
-        canvas.height = pixelData.length * settings.fontSize;
+    if (pixelData[0].length * settings.fontSize != asciiCanvas.width || pixelData.length * settings.fontSize != asciiCanvas.height) {
+        asciiCanvas.width = pixelData[0].length * settings.fontSize;
+        asciiCanvas.height = pixelData.length * settings.fontSize;
         //Increase canvas performance
         ctx.imageSmoothingEnabled = false;
     }
     //Draw the text on the canvas
-  
+
     ctx.font = `${settings.fontSize}px square`;
     for (let hPixel = 0; hPixel < pixelData.length; hPixel++) {
         for (let wPixel = 0; wPixel < pixelData[hPixel].length; wPixel++) {
@@ -493,13 +463,12 @@ function drawInAscii(pixelData) {
             ctx.fillText(char, wPixel * settings.fontSize, hPixel * settings.fontSize);
         }
     }
-    
-    return canvas;
-
+    const time = new Date().getTime() - startTimer;
+    return {data:asciiCanvas.toDataURL("image/webp"),time:time};
 }
 async function extractFrames(video) {
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: true });
     const cw = Math.floor(video.clientWidth);
     const ch = Math.floor(video.clientHeight);
     canvas.width = cw;
@@ -510,10 +479,10 @@ async function extractFrames(video) {
     const interval = 1000 / settings.frameRate;
 
     let duration = video.duration * settings.frameRate;
-    console.log(duration);
+    console.log("Total Frames: " + Math.floor(duration));
     //Get all the frames from the video
     for (let i = 0; i < duration; i++) {
-        img = await getFrame(video, ctx, i * interval,i);
+        img = await getFrame(video, ctx, i * interval, i);
         frames.push(img);
     }
     //sort the frames
@@ -522,7 +491,7 @@ async function extractFrames(video) {
     });
     return frames;
 }
-function getFrame(video, ctx, seekTo,frameNumber) {
+function getFrame(video, ctx, seekTo, frameNumber) {
     //Get the frame from the video in base64
     return new Promise((resolve, reject) => {
         video.currentTime = seekTo / 1000;
@@ -530,7 +499,7 @@ function getFrame(video, ctx, seekTo,frameNumber) {
             ctx.drawImage(video, 0, 0, settings.w, settings.h);
             let idata = ctx.getImageData(0, 0, settings.w, settings.h);
             let data = idata.data;
-            resolve({data: getPixelData(data),frameNumber: frameNumber});
+            resolve({ data: getPixelData(data), frameNumber: frameNumber });
         }, { once: true });
     });
 
