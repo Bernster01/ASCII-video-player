@@ -176,7 +176,7 @@ function addEventListeners() {
 
 
 
-        draw(this, backcontext);
+        draw(this, backcontext,0);
         setCorrectWidth();
         setTimeout(setCorrectWidth, 100);
     }, false);
@@ -212,25 +212,27 @@ function addEventListeners() {
     });
     timeSeek.addEventListener('mouseout', () => document.getElementById('seekDisplay').style.visibility = 'hidden');
 }
-function draw(v, bc) {
+function draw(v, bc, tick) {
     if (v.paused || v.ended) return false;
     // First, draw it into the backing canvas
-
+    tick++;
     bc.drawImage(v, 0, 0, settings.w, settings.h);
     settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
     let pixelData = getPixelData(data);
     let pixels = pixelData.pixels;
-    if(settings.autoAdjustBrightness)
+    if(settings.autoAdjustBrightness && tick%2==0){
         adjustBrightness(pixelData.frameTotalBrightnessData);
+        tick = 0;
+    }
 
     if (settings.useColor)
         drawInColor(pixels);
     else
         drawInNumbers(pixels);
     setTimeout(() => {
-        draw(v, bc);
+        draw(v, bc, tick);
     }, 1000 / settings.frameRate);
 }
 /**
@@ -292,6 +294,7 @@ function getChar(brightness) {
     //If brightness is near max reduce the brightness
     if (brightness > settings.brightnessThreshold) brightness *= settings.brightnessThresholdFactor;
     brightness *= settings.brightness;
+    if (brightness >= 255) return chars[chars.length - 1];
 
     if (brightness <= 0) return chars[0];
     //Map brightness to a char
@@ -312,11 +315,9 @@ function setCorrectWidth() {
 
 }
 function adjustBrightness(frameTotalBrightnessData) {
-    //Calculate brightness in the frame ranging from 0 to 1
-    let brightness = 1-((frameTotalBrightnessData*0.35) / (settings.w * settings.h * 255));
-    if (brightness > 0.8) brightness = brightness*1.2;
-    if (brightness > 1) brightness = 1;
-    if (brightness < 0) brightness = 0;
+    let brightness = 1-((frameTotalBrightnessData*0.5) / (settings.w * settings.h * 255));
+    if (brightness > 0.7) brightness = brightness*1.4;
+    if (brightness <=0.5) brightness = 0.5;
     
 
     //Set the brightness to the settings
