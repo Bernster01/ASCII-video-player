@@ -314,7 +314,7 @@ function setCorrectWidth() {
 function adjustBrightness(frameTotalBrightnessData) {
     // Depending on the average brightness and aggresivity adjust the brightness
     // Change the brightness by the aggresivity, high aggresivity = high correction, low aggresivity = low correction
-    let brightness =1- ((frameTotalBrightnessData / (settings.w * settings.h) / 255 -0.2 ) * settings.autoAdjustAgresivity);
+    let brightness =1- ((frameTotalBrightnessData / (settings.w * settings.h) / 255 -0.3 ) * settings.autoAdjustAgresivity);
     
     //Set the brightness to the settings
     settings.brightness = brightness;
