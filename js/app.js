@@ -9,7 +9,8 @@ let settings = {
     brightnessThresholdFactor: 0.9,
     brightness: 1,
     useColor: false,
-    fontSize: 14
+    fontSize: 14,
+    autoAdjustBrightness: true
 
 };
 currentFrameData = "";
@@ -75,6 +76,7 @@ function addEventListeners() {
     const settingsButton = document.getElementById('settingsButton');
     const brightnessThreshold = document.getElementById('brightnessThreshold');
     const brightness = document.getElementById('brightnessReduction');
+    const autoBrightnessReductionCheckbox = document.getElementById('autoBrightnessReductionCheckbox');
     const brightnessThresholdFactor = document.getElementById('brightnessThresholdFactor');
     const useColor = document.getElementById('useColor');
 
@@ -100,8 +102,12 @@ function addEventListeners() {
 
     brightness.addEventListener('input', function () {
         settings.brightness = this.value;
+        document.getElementById('brightnessValue').innerHTML = Math.round(settings.brightness * 100) + '%';
     });
-
+    autoBrightnessReductionCheckbox.addEventListener('click', function () {
+        settings.autoAdjustBrightness = this.checked;
+    });
+    
     settingsButton.addEventListener('click', () => {
         document.getElementById('vcv').classList.toggle('translateSelfLeft');
     });
@@ -214,7 +220,10 @@ function draw(v, bc) {
     settings.w = Math.floor(settings.h * (v.clientWidth / v.clientHeight));
     const idata = bc.getImageData(0, 0, settings.w, settings.h);
     const data = idata.data;
-    let pixels = getPixelData(data);
+    let pixelData = getPixelData(data);
+    let pixels = pixelData.pixels;
+    if(settings.autoAdjustBrightness)
+        adjustBrightness(pixelData.frameTotalBrightnessData);
 
     if (settings.useColor)
         drawInColor(pixels);
@@ -231,19 +240,22 @@ function draw(v, bc) {
  */
 function getPixelData(data) {
     pixels = [];
+    let frameTotalBrightnessData = 0;
     for (let hPixel = 0; hPixel < settings.h; hPixel++) {
         pixels[hPixel] = pixels[hPixel] || [];
         for (let wPixel = 0; wPixel < settings.w; wPixel++) {
             const index = (hPixel * settings.w + wPixel) * 4;
+            let brightness = (3 * data[index] + 4 * data[index + 1] + data[index + 2]) >>> 3;
+            frameTotalBrightnessData += brightness;
             pixels[hPixel][wPixel] = {
                 R: data[index],
                 G: data[index + 1],
                 B: data[index + 2],
-                brightness: (3 * data[index] + 4 * data[index + 1] + data[index + 2]) >>> 3
+                brightness: brightness
             };
         }
     }
-    return pixels;
+    return {pixels:pixels,frameTotalBrightnessData:frameTotalBrightnessData};
 }
 function drawInNumbers(pixels) {
     //Get the element
@@ -298,6 +310,20 @@ function setCorrectWidth() {
     textRender.style.height = height + 'px';
     videoControlls.style.width = width + 'px';
 
+}
+function adjustBrightness(frameTotalBrightnessData) {
+    //Calculate brightness in the frame ranging from 0 to 1
+    let brightness = 1-((frameTotalBrightnessData*0.35) / (settings.w * settings.h * 255));
+    if (brightness > 0.8) brightness = brightness*1.2;
+    if (brightness > 1) brightness = 1;
+    if (brightness < 0) brightness = 0;
+    
+
+    //Set the brightness to the settings
+    settings.brightness = brightness;
+    const brightnessReduction = document.getElementById('brightnessReduction');
+    brightnessReduction.value = brightness;
+    document.getElementById('brightnessValue').innerHTML = Math.round(settings.brightness * 100) + '%';
 }
 function changeVideoSize(value) {
     const sizes = ["4", "2", "1"];

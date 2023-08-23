@@ -50,7 +50,7 @@
                     </div>
                     <div class="setting">
                         <label for="frameRate">Framerate - <span id="frameRateValue"></span></label>
-                        <input type=range id=frameRate min=1 max=60 value=30 step=1>
+                        <input type=range id=frameRate min=1 max=60 value=24 step=1>
                     </div>
                 </div>
                 
@@ -76,13 +76,15 @@
                         <h2>Brightness Controll</h2>
                         <div class="inputRange">
                             <h5>Brightness threshold</h5>
-                            <label for=brightnessThreshold>Value</label>
+                            <span><label for=brightnessThreshold>Value</label>
                             <input type=range id=brightnessThreshold min=0 max=255 value=230 step=1>
                             <input type=range id=brightnessThresholdFactor min=0 max=1 value=0.9 step=0.01>
                         </div>
                         <div class="inputRange">
                             <h5>Brightness reduction</h5>
-                            <label for=brightnessReduction>Value</label>
+                            <label for=autoBrightnessReductionCheckbox>Auto adjust</label>
+                            <input type=checkbox id=autoBrightnessReductionCheckbox checked="true">
+                            <span>Brightness: </span><label for=brightnessReduction id="brightnessValue">90%</label>
                             <input type=range id=brightnessReduction min=0 max=1 value=0.9 step=0.01>
                         </div>
                     </div>
