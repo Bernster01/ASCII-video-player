@@ -74,18 +74,22 @@
                 <div id="Advanced_Settings">
                     <div class="Advanced-settings">
                         <h2>Brightness Controll</h2>
-                        <div class="inputRange">
-                            <h5>Brightness threshold</h5>
-                            <span><label for=brightnessThreshold>Value</label>
-                            <input type=range id=brightnessThreshold min=0 max=255 value=230 step=1>
-                            <input type=range id=brightnessThresholdFactor min=0 max=1 value=0.9 step=0.01>
-                        </div>
+                        
                         <div class="inputRange">
                             <h5>Brightness reduction</h5>
-                            <label for=autoBrightnessReductionCheckbox>Auto adjust</label>
-                            <input type=checkbox id=autoBrightnessReductionCheckbox checked="true">
-                            <span>Brightness: </span><label for=brightnessReduction id="brightnessValue">90%</label>
-                            <input type=range id=brightnessReduction min=0 max=1.5 value=0.9 step=0.01>
+                            <div id="">
+                                <div>
+                                    <label for=autoBrightnessReductionCheckbox>Auto adjust</label>
+                                    <input type=checkbox id=autoBrightnessReductionCheckbox checked="true"></div>
+                                </div>
+                                    <label for=autoBrightnessAgressive>Aggressiveness</label>
+                                    <input type=range id="autoBrightnessAgressive" min=0.1 max=1 value=0.5 step=0.01>
+                                </div>
+                                <span>Brightness: </span><label for=brightnessReduction id="brightnessValue">90%</label>
+                                <input type=range id=brightnessReduction min=0 max=1.5 value=0.9 step=0.01>
+                            </div>
+
+                           
                         </div>
                     </div>
                 </div>

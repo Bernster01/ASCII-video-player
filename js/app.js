@@ -10,7 +10,8 @@ let settings = {
     brightness: 1,
     useColor: false,
     fontSize: 14,
-    autoAdjustBrightness: true
+    autoAdjustBrightness: true,
+    autoAdjustAgresivity: 0.5
 
 };
 currentFrameData = "";
@@ -74,11 +75,10 @@ function addEventListeners() {
     const fileDropVideo = document.getElementById('fileDrop');
     const advSettingsSwitch = document.getElementById('adv_settings_switch');
     const settingsButton = document.getElementById('settingsButton');
-    const brightnessThreshold = document.getElementById('brightnessThreshold');
     const brightness = document.getElementById('brightnessReduction');
     const autoBrightnessReductionCheckbox = document.getElementById('autoBrightnessReductionCheckbox');
-    const brightnessThresholdFactor = document.getElementById('brightnessThresholdFactor');
     const useColor = document.getElementById('useColor');
+    const autoBrightnessAgressive = document.getElementById('autoBrightnessAgressive'); 
 
     // Add event listeners
     useColor.addEventListener('click', () => {
@@ -93,12 +93,6 @@ function addEventListeners() {
         document.getElementById('useColorToolTip').style.display = 'none';
     });
 
-    brightnessThresholdFactor.addEventListener('input', function () {
-        settings.brightnessThresholdFactor = this.value;
-    });
-    brightnessThreshold.addEventListener('input', function () {
-        settings.brightnessThreshold = this.value;
-    });
 
     brightness.addEventListener('input', function () {
         settings.brightness = this.value;
@@ -106,6 +100,9 @@ function addEventListeners() {
     });
     autoBrightnessReductionCheckbox.addEventListener('click', function () {
         settings.autoAdjustBrightness = this.checked;
+    });
+    autoBrightnessAgressive.addEventListener('input', function () {
+        settings.autoAdjustAgresivity = this.value;
     });
     
     settingsButton.addEventListener('click', () => {
@@ -315,11 +312,10 @@ function setCorrectWidth() {
 
 }
 function adjustBrightness(frameTotalBrightnessData) {
-    let brightness = 1-((frameTotalBrightnessData*0.5) / (settings.w * settings.h * 255));
-    if (brightness > 0.7) brightness = brightness*1.4;
-    if (brightness <=0.5) brightness = 0.5;
+    // Depending on the average brightness and aggresivity adjust the brightness
+    // Change the brightness by the aggresivity, high aggresivity = high correction, low aggresivity = low correction
+    let brightness =1- ((frameTotalBrightnessData / (settings.w * settings.h) / 255 -0.2 ) * settings.autoAdjustAgresivity);
     
-
     //Set the brightness to the settings
     settings.brightness = brightness;
     const brightnessReduction = document.getElementById('brightnessReduction');
@@ -431,11 +427,12 @@ async function downloadAsciiVideo() {
     console.log("Extracting frames...");
     // Extract frames from video to pixel data
     const videoData = await extractFrames(video);
+    console.log(videoData)
     console.log("Rendering frames...");
     let data = [];
     for (let i = 0; i < videoData.length; i++) {
         //draw the frame in ascii
-        data.push(drawInAscii(videoData[i].data));
+        data.push(drawInAscii(videoData[i].data.pixels));
         console.log("Rendered frame " + i + " of " + videoData.length + " in "+data[i].time+" ms");
     }
     console.log("Creating encoder...");
