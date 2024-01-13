@@ -29,7 +29,7 @@
             <span id=time></span>
         </div>
         <button onclick="downloadAsciiVideo()">Download Video</button>
-        
+
         <video id=v autoplay loop controls webkit-playsinline playsinline></video>
     </div>
     <div class="video-controller-container translateSelfLeft" id="vcv">
@@ -45,15 +45,19 @@
                     </div>
                     <div class="setting">
                         <label for="size">Size - <span id="sizeValue"></span></label>
-                        <input type=range id=size min=1 max=3 value=2 step=1>
-                        
+                        <input type=range id=size min=1 max=117 value=66 step=1>
+
                     </div>
                     <div class="setting">
                         <label for="frameRate">Framerate - <span id="frameRateValue"></span></label>
-                        <input type=range id=frameRate min=1 max=60 value=24 step=1>
+                        <input type=range id=frameRate min=1 max=60 value=30 step=1>
+                    </div>
+                    <div class="setting">
+                        <label for="playbackSpeed">Playback speed - <span id="playbackSpeedValue">100%</span></label>
+                        <input type=range id="playbackSpeed" min=0.1 max=2 value=1 step=0.01>
                     </div>
                 </div>
-                
+
                 <button onclick="setCorrectWidth()">Fix size</button>
                 <button onclick="copyText()">Copy Text</button>
                 <p>Input - select or drop on video display</p>
@@ -63,42 +67,45 @@
                 <label for=robinMode>Robin Mode</label>
                 <input type=checkbox id=robinMode>
                 <label for="useColor">Use color</label>
-                <input type=checkbox id="useColor" unchecked><span id="useColorToolTip">Enable the use of color, BUT it will slow down the rendering process EXTREMELY!</span>
+                <input type=checkbox id="useColor" unchecked><span id="useColorToolTip">Enable the use of color, BUT it
+                    will slow down the rendering process EXTREMELY!</span>
             </div>
 
             <div id="Advanced_Settings_Container">
                 <div class="container-header">
-                
+
                     <h3>Advanced settings</h3>
                 </div>
                 <div id="Advanced_Settings">
                     <div class="Advanced-settings">
                         <h2>Brightness Controll</h2>
-                        
+
                         <div class="inputRange">
                             <h5>Brightness reduction</h5>
                             <div id="">
                                 <div>
                                     <label for=autoBrightnessReductionCheckbox>Auto adjust</label>
-                                    <input type=checkbox id=autoBrightnessReductionCheckbox checked="true"></div>
+                                    <input type=checkbox id=autoBrightnessReductionCheckbox checked="true">
                                 </div>
-                                    <label for=autoBrightnessAgressive>Aggressiveness</label>
-                                    <input type=range id="autoBrightnessAgressive" min=0.1 max=1 value=0.5 step=0.01>
-                                </div>
-                                <span>Brightness: </span><label for=brightnessReduction id="brightnessValue">90%</label>
-                                <input type=range id=brightnessReduction min=0 max=1.5 value=0.9 step=0.01>
                             </div>
-
-                           
+                            <label for=autoBrightnessAgressive>Aggressiveness</label>
+                            <input type=range id="autoBrightnessAgressive" min=0.1 max=1 value=0.5 step=0.01>
                         </div>
+                        <span>Brightness: </span><label for=brightnessReduction id="brightnessValue">90%</label>
+                        <input type=range id=brightnessReduction min=0 max=1.5 value=0.9 step=0.01>
                     </div>
+
+
                 </div>
             </div>
-
         </div>
+    </div>
+
+    </div>
     </div>
     <span id="seekDisplay"></span>
 </body>
-<script src="js/app.js" ></script>
+<script src="js/app.js"></script>
 <script src="js/whammy.js"></script>
+
 </html>

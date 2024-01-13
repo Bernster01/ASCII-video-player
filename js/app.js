@@ -1,6 +1,6 @@
 let settings = {
     size: 2,
-    frameRate: 24,
+    frameRate: 30,
     invertedColor: false,
     w: 300,
     h: 150,
@@ -11,7 +11,8 @@ let settings = {
     useColor: false,
     fontSize: 14,
     autoAdjustBrightness: true,
-    autoAdjustAgresivity: 0.5
+    autoAdjustAgresivity: 0.5,
+    playbackSpeed: 1
 
 };
 currentFrameData = "";
@@ -52,7 +53,7 @@ function updateLabel(label) {
             break;
         case "sizeValue":
             setTimeout(() => {
-                sizeValue.innerHTML = `${settings.w}x${settings.h}`;
+                sizeValue.innerHTML = `${settings.w}x${Math.round(settings.h)}`;
             }, 100);
             break;
         case "frameRateValue":
@@ -73,7 +74,7 @@ function addEventListeners() {
     const v = document.getElementById('v');
     const timeSeek = document.getElementById('videoSeek');
     const fileDropVideo = document.getElementById('fileDrop');
-    const advSettingsSwitch = document.getElementById('adv_settings_switch');
+    const playbackSpeed = document.getElementById('playbackSpeed');
     const settingsButton = document.getElementById('settingsButton');
     const brightness = document.getElementById('brightnessReduction');
     const autoBrightnessReductionCheckbox = document.getElementById('autoBrightnessReductionCheckbox');
@@ -93,7 +94,11 @@ function addEventListeners() {
         document.getElementById('useColorToolTip').style.display = 'none';
     });
 
-
+    playbackSpeed.addEventListener('input', function () {
+        settings.playbackSpeed = this.value;
+        document.getElementById('playbackSpeedValue').innerHTML = Math.round(settings.playbackSpeed * 100) + '%';
+        document.getElementById('v').playbackRate = settings.playbackSpeed;
+    });
     brightness.addEventListener('input', function () {
         settings.brightness = this.value;
         document.getElementById('brightnessValue').innerHTML = Math.round(settings.brightness * 100) + '%';
@@ -148,7 +153,7 @@ function addEventListeners() {
     frameRateControl.addEventListener('dblclick', function () {
         this.value = settings.frameRate = 30;
     });
-
+    
     sizeControl.addEventListener('change', function () {
         changeVideoSize(this.value)
 
@@ -323,8 +328,7 @@ function adjustBrightness(frameTotalBrightnessData) {
     document.getElementById('brightnessValue').innerHTML = Math.round(settings.brightness * 100) + '%';
 }
 function changeVideoSize(value) {
-    const sizes = ["4", "2", "1"];
-    settings.size = sizes[value - 1];
+    settings.size = 66.5/value;
     settings.fontSize = 7 * settings.size;
     //Change css variables
     document.documentElement.style.setProperty('--font-size', settings.fontSize + 'px');
