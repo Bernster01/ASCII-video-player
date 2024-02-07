@@ -15,6 +15,7 @@ let settings = {
     playbackSpeed: 1
 
 };
+let fileName = "";
 currentFrameData = "";
 fetch('./data/info.json').then((response) => response.json()).then((data) => {
     document.getElementById('version').innerHTML = data.version;
@@ -380,6 +381,8 @@ function changeVideo(input) {
     video.volume = document.getElementById('volume').value;
     video.play();
     updateLabel("sizeValue");
+    //Set the video name
+    fileName = input[0].name;
     setTimeout(() => {
         changeVideoSize(document.getElementById('size').value);
     }, 75);
@@ -427,27 +430,44 @@ function copyText() {
     document.body.removeChild(dummy);
 }
 async function downloadAsciiVideo() {
+    let info = document.getElementById('downloadInfo');
+    let infoValue = document.getElementById('downloadInfoValue');
+
+    document.getElementById('downloadContainer').style.display = 'flex';
     const video = document.getElementById('v');
+    document.getElementById('downloadFileName').innerHTML = fileName;
     console.log("Extracting frames...");
+    info.innerHTML = "Extracting frames...";
     // Extract frames from video to pixel data
     const videoData = await extractFrames(video);
-    console.log(videoData)
+   
     console.log("Rendering frames...");
+    info.innerHTML = "Rendering frames...";
+    await new Promise(resolve => { setTimeout(resolve, 0) });
     let data = [];
     for (let i = 0; i < videoData.length; i++) {
         //draw the frame in ascii
         data.push(drawInAscii(videoData[i].data.pixels));
-        console.log("Rendered frame " + i + " of " + videoData.length + " in "+data[i].time+" ms");
+        //Update the info text 
+        infoValue.innerHTML = "Rendered frame " + i + " of " + videoData.length;
+        await new Promise(resolve => { setTimeout(resolve, 0) });
     }
     console.log("Creating encoder...");
+    info.innerHTML = "Creating encoder...";
+    infoValue.innerHTML = "0 of 1";
+    await new Promise(resolve => { setTimeout(resolve, 1000) });
     //Convert the images to a video
     const encoder = new Whammy.Video(settings.frameRate);
     console.log("Adding frames to encoder...");
+    info.innerHTML = "Adding frames to encoder...";
+    await new Promise(resolve => { setTimeout(resolve, 1000) });
     for (let i = 0; i < data.length; i++) {
         encoder.add(data[i].data);
+        infoValue.innerHTML = "Added frame " + i + " of " + data.length;
     }
     console.log("Encoding video...");
-    // Extract audio from video and compile video frames in parallel
+    info.innerHTML = "Encoding video...";
+    infoValue.innerHTML = "0 of 1";
     const [output] = await Promise.all([
         new Promise(resolve => {
             encoder.compile(false, result => {
@@ -455,8 +475,10 @@ async function downloadAsciiVideo() {
             });
         })
     ]);
-    // Output the combinedBlob to the console
     console.log("Creating video element...")
+    info.innerHTML = "Creating video element...";
+    infoValue.innerHTML = "0 of 1";
+    await new Promise(resolve => { setTimeout(resolve, 1000) });
     let videoPlayer = document.createElement("video");
     videoPlayer.src = URL.createObjectURL(new Blob([output], { type: "video/webm" }));
     videoPlayer.controls = true;
@@ -464,6 +486,19 @@ async function downloadAsciiVideo() {
     videoPlayer.loop = true;
     document.body.appendChild(videoPlayer);
     console.log("Done!");
+    info.innerHTML = "Done!";
+    infoValue.innerHTML = "";
+    //download the video
+    const a = document.createElement("a");
+    a.href = videoPlayer.src;
+    a.download = fileName+"_Made_With_ASCIIvideoplayer.webm";
+    a.click();
+    //Remove the video element
+    videoPlayer.remove();
+    setTimeout(() => {
+
+    document.getElementById('downloadContainer').style.display = 'none';
+    }, 3000);
 }
 
 function drawInAscii(pixelData) {
@@ -514,6 +549,7 @@ async function extractFrames(video) {
     for (let i = 0; i < duration; i++) {
         img = await getFrame(video, ctx, i * interval, i);
         frames.push(img);
+        document.getElementById('downloadInfoValue').innerHTML = "Extracted frame " + i + " of " + Math.floor(duration);
     }
     //sort the frames
     frames.sort((a, b) => {

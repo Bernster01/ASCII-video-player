@@ -86,7 +86,7 @@ body::-webkit-scrollbar {
     flex-direction: row-reverse;
     justify-content: center;
     align-items: flex-start;
-    width: fit-content;
+    width: auto;
     height: auto;
     transition: transform 1s ease-in-out;
     
@@ -133,11 +133,11 @@ input[type="range"]{
 }
 #fileDrop{
     display: flex;
-    width: fit-content;
+    width: auto;
 }
 #fileDrop form{
     display: flex;
-    width: fit-content;
+    width: auto;
 }
 #hiddenInput{
     display: none;
@@ -273,5 +273,26 @@ input[type="range"]{
     width: fit-content;
     position: absolute;
     overflow: hidden;
+
+}
+#downloadContainer{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9000000;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#downloadProgress{
+    display: flex;
+    flex-direction: column;
+    background-color: #b1b1b1;
+    border-radius: 1em;
+    padding: 2rem;
 
 }
